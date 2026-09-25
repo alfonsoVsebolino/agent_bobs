@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# Node, if the dashboard grows one
+node_modules/
+
+# Demo run copies live outside the repo; never commit them
+demo-*/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
