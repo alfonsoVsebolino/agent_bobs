@@ -48,6 +48,17 @@ Server listens on **port 8765**.
 another session also changes or calls. Two sessions that only *call* the same
 function never conflict.
 
+Claims **add up**: a session's files, symbols and calls accumulate across claims
+until it releases, because the `PreToolUse` hook claims one file at a time with
+no symbols — replacing would erase what the agent declared. A session never
+conflicts with itself, and only sessions whose status is `working` can block
+others. On a conflict the claim is still recorded, with status `blocked`, and
+both sessions get the conflict, so both dashboard columns turn red. `release`
+removes the session and clears every conflict that pointed at it; anyone
+it had blocked goes back to `working`. Both
+doors return the same shape: `{"clear": true, "conflict": null}` or
+`{"clear": false, "conflict": {...}}`.
+
 ### Hook endpoints (Bob lifecycle hooks → server)
 
 Same logic as the MCP tools, exposed over plain HTTP because a hook is a shell
@@ -84,7 +95,7 @@ When a collision is found, `conflict` becomes:
 {"with": "jay", "reason": "aig is renaming get_user, which jay calls", "type": "same_function"}
 ```
 
-`type` is `same_file` or `same_function`.
+`status` is `working` or `blocked`; `type` is `same_file` or `same_function`.
 
 ## Scope — do not exceed
 
@@ -111,7 +122,7 @@ persistent history, a database. Python only. In-memory only. Runs locally.
 ```python
 mcp_app = mcp.http_app(path="/mcp")
 app = FastAPI(lifespan=mcp_app.lifespan)  # required, or the MCP session manager never starts
-# define @app.websocket("/ws") and the /api routes HERE, before the mount
+app.include_router(router)                 # /ws and /api live on an APIRouter; include it BEFORE the mount
 app.mount("/", mcp_app)                    # last, or it swallows every other route
 ```
 
