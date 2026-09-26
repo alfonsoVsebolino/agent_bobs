@@ -7,7 +7,8 @@ agent's work.
 Bob loads this file automatically in every session. Everything below is decided.
 Do not redesign the architecture, add dependencies, or add features beyond the
 scope. If a request conflicts with this file, point out the conflict instead of
-silently choosing. Why each decision was made: `docs/DECISIONS.md`.
+silently choosing. Why each decision was made: `docs/DECISIONS.md`. Who does
+what: `docs/ROLES.md`.
 
 ## The problem
 
@@ -173,6 +174,7 @@ Three Bob sessions, three copies of `demo/`, one laptop — said openly.
 
 - Push and pull every 2–3 hours. No long-lived branches.
 - Stuck over 30 minutes → say so in the group chat.
+- Check in with the team every 4 hours — 10 minutes maximum.
 - Capture your own `bob_sessions/` screenshot when each Bob task finishes.
 - Hour 36 (Sun 27 Sep, 11:00 PHT): feature freeze. After that, video and writeup only.
 - When behind, cut from the stretch list. Never cut the demo.
