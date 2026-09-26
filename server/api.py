@@ -5,7 +5,7 @@ Exposes:
   POST /api/claim   — hooks call this to declare files/symbols/calls
   POST /api/release — hooks call this when a session finishes
   GET  /ws          — dashboard connects here; receives full snapshot on connect
-                      and after every state change
+                    and after every state change
 
 All state lives in state.py.  This module only routes and broadcasts.
 """
@@ -19,7 +19,7 @@ from typing import Optional
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
-from .state import claim as _claim, release as _release, get_snapshot
+from .state import claim as _claim, check as _check, release as _release, get_snapshot
 
 router = APIRouter()
 
@@ -63,6 +63,16 @@ class ReleaseRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+
+@router.post("/api/check")
+async def api_check(req: ClaimRequest):
+    """Read-only conflict probe — same detection as /api/claim but records nothing.
+
+    STATE is never mutated; no WebSocket broadcast is sent.
+    Returns {"clear": true, "conflict": null} or {"clear": false, "conflict": {...}}.
+    """
+    return _check(req.session, req.files, req.symbols, req.calls)
+
 
 @router.post("/api/claim")
 async def api_claim(req: ClaimRequest):
