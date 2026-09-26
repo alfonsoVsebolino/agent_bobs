@@ -200,8 +200,8 @@ conflicts, and the merged code fails its tests.
 3. **One screenshot per task.** Keep the final one (1.19 Bobcoins), named
    `imagic_johnabrahmzapico_task01_demo_app_summary.png`, and delete the earlier
    copy and the misspelled name.
-4. **Your second job:** everything the lablab submission form asks for, and the
-   exact deadline.
+4. ~~Your second job: the submission requirements and deadline~~ — done, in
+   `docs/SUBMISSION.md`.
 5. **Optional:** "The demo" in AGENTS.md also asks for one same-file collision
    where a hook visibly blocks a write. It doesn't fit these three tasks without
    risking a git conflict, so make it a short separate scene — Alfonso's

@@ -155,11 +155,9 @@ is unchanged.
 
 ## Still unverified — check before relying on it
 
-- **Judging criteria.** v1 says "meaningful use of IBM Bob, originality,
-  demonstrated impact." That is not in the official guide or the kickoff email.
-  Plausible, unconfirmed.
-- **Deadline.** Sun 27 Sep 23:00 PHT (15:00 UTC) comes from another team's repo,
-  not an official source. Confirm on the submission form.
+- ~~Judging criteria and deadline~~ — **confirmed** on the lablab event page; see
+  `docs/SUBMISSION.md`. The real criteria differ from v1: Application of
+  Technology, Presentation, Business Value and Originality.
 - **Hooks and MCP behave as documented** — Person 3, first thing once Bob is installed.
 - **The exact names of Bob's file-editing tools**, so the `PreToolUse` matcher
   covers all of them. Docs show `write_file`; there are likely others.
@@ -185,4 +183,4 @@ is unchanged.
 | 0 | Fri 25 Sep, 23:00 | Kickoff |
 | 28 | **Sun** 27 Sep, 03:00 | Stretch goals allowed only if ahead |
 | 36 | Sun 27 Sep, 11:00 | **Feature freeze** — video and writeup only after this |
-| 48 | Sun 27 Sep, 23:00 | Deadline (unconfirmed — see above) |
+| 48 | Sun 27 Sep, 23:00 | **Deadline** (confirmed) — submit by 21:00 |

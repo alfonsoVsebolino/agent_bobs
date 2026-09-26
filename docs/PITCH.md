@@ -159,4 +159,4 @@ lifecycle hooks and AGENTS.md. That is our niche, and we say so openly.
       claims are released when a task ends or after every reply.
 - [ ] The demo's real numbers: collisions caught, and how quickly.
 - [ ] The control run's real `git merge` output and test failure.
-- [ ] The exact submission requirements and deadline, from the lablab form.
+- [x] The exact submission requirements and deadline — see `docs/SUBMISSION.md`.
