@@ -24,8 +24,9 @@ a push is rejected, ask Alfonso to add you as a collaborator on the repo.
 `/api` routes for the hooks, and the `/ws` websocket for the dashboard — with 13
 passing tests. How to run it is in the README.
 
-**Next:** connect the dashboard to `/ws` with Gabriel, and connect Bob to `/mcp`
-and the hooks to `/api` with Alfonso.
+**Next:** the demo harness in `harness/`. One script builds the three demo copies,
+with or without Agent Bobs; another merges their work and runs the tests, for
+the control run.
 
 ---
 
@@ -49,7 +50,10 @@ against the real server with the three-Bob demo.
    control run — and show "—" when it isn't given.
 4. **Optional:** a Bob that holds a function but isn't blocked gets a red badge
    too, so viewers can't tell who is blocked. Make the holder's badge neutral.
-5. **Add your Bob task summaries** to `bob_sessions/`.
+5. **Rename your Bob screenshot.** `bob_sessions/Screenshot 2026-09-26 230001.png`
+   is the right panel with the wrong name. Retake it as a tight crop of just the
+   Task panel, named `imagic_<your-lablab-username>_task01_dashboard_summary.png`,
+   and delete the old file.
 
 ### The first task
 
@@ -168,6 +172,32 @@ the Bob window.
 ---
 
 ## Person 4 — Demo and submission (Abrahm)
+
+**Built:** the sample app in `demo/` (12 passing tests) and `demo/TASKS.md`. A dry
+run of the control run with this app works exactly as the pitch says: each of
+the three edits passes its tests on its own, git merges all three with 0
+conflicts, and the merged code fails its tests.
+
+**Next:**
+
+1. **End tasks 2 and 3 in `TASKS.md` with "Don't change any other file."** If a
+   Bob puts its work into a file that aig is also editing — `tests/test_auth.py`
+   is the likely one — git can report a real conflict, and the "0 conflicts"
+   moment is gone.
+2. **In task 2, also ask for a test in a new file, `tests/test_reset.py`.** Today
+   the merged tests only catch kim's breakage. jay's `reset.py` is broken too,
+   but no test imports it.
+3. **One screenshot per task.** Keep the final one (1.19 Bobcoins), named
+   `imagic_johnabrahmzapico_task01_demo_app_summary.png`, and delete the earlier
+   copy and the misspelled name.
+4. **Your second job:** everything the lablab submission form asks for, and the
+   exact deadline.
+5. **Optional:** "The demo" in AGENTS.md also asks for one same-file collision
+   where a hook visibly blocks a write. It doesn't fit these three tasks without
+   risking a git conflict, so make it a short separate scene — Alfonso's
+   two-window test is exactly that.
+
+### The first task
 
 You own the sample app we break on purpose, and later the video and the writeup.
 The demo app comes first, and it doesn't need the server.

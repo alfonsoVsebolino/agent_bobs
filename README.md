@@ -27,6 +27,7 @@ Built by team **iMAGIC** for the IBM Bob 2.0 Hackathon, 25–27 September 2026.
 | `dashboard/` | the live screen | Person 2 |
 | `demo/` | the sample app we break on purpose | Person 4 |
 | `demo/.bob/` | the Bob mode, MCP connection and hooks for the demo | Person 3 |
+| `harness/` | builds the three demo copies, merges their work, runs the tests | Person 1 |
 | `bob_sessions/` | every participant's Bob task summaries | everyone |
 | `docs/` | roles, decisions, pitch | — |
 
@@ -36,7 +37,9 @@ Built by team **iMAGIC** for the IBM Bob 2.0 Hackathon, 25–27 September 2026.
   the dashboard; 13 passing tests
 - ✅ Dashboard — live from the server's `/ws`; small fixes pending
 - 🔨 Bob integration — built in `demo/.bob/`; being proven in a real Bob
-- 🔨 Demo app — under way
+- ✅ Demo app — 12 passing tests; a dry run of the control run gives 0 git
+  conflicts and failing tests, as the pitch says
+- 🔨 Demo harness — builds the three demo copies and runs the control run
 
 ## Run the server
 
