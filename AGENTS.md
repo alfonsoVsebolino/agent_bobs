@@ -65,9 +65,11 @@ doors return the same shape: `{"clear": true, "conflict": null}` or
 Same logic as the MCP tools, exposed over plain HTTP because a hook is a shell
 command, not an MCP client. One implementation, two doors.
 
-- `POST /api/claim` — body `{"session": "aig", "files": ["auth/user.py"]}` →
-  `{"clear": true}` or `{"clear": false, "conflict": {...}}`
-- `POST /api/release` — body `{"session": "aig"}`
+- `POST /api/claim` — body `{"session": "aig", "files": ["auth/user.py"]}`, with
+  optional `"symbols"` and `"calls"` lists → `{"clear": true, "conflict": null}` or
+  `{"clear": false, "conflict": {...}}`. The hook exits with code 2 when `clear`
+  is false, so Bob refuses the write.
+- `POST /api/release` — body `{"session": "aig"}` → `{"ok": true}`
 
 ### Session identity
 
@@ -87,8 +89,12 @@ the app in three folders.
 
 ```json
 {"session": "aig", "files": ["auth/user.py"], "symbols": ["get_user"],
- "status": "working", "conflict": null}
+ "calls": [], "status": "working", "conflict": null}
 ```
+
+`/ws` sends a JSON **array** of these, one per active session: once when the
+dashboard connects, and again after every claim or release. `symbols` are the
+functions a session is changing; `calls` are the ones it only calls.
 
 When a collision is found, `conflict` becomes:
 

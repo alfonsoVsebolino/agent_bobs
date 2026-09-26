@@ -20,15 +20,12 @@ a push is rejected, ask Alfonso to add you as a collaborator on the repo.
 
 ## Person 1 — Server (Marco)
 
-**Done:** the server core — claim and release, and the collision rules — with 8
-passing tests, including the three-Bob demo scenario.
+**Done:** the whole server — the collision rules, the MCP tools Bob calls, the
+`/api` routes for the hooks, and the `/ws` websocket for the dashboard — with 13
+passing tests. How to run it is in the README.
 
-**In progress:** the three doors onto that core — MCP tools for Bob, `/api`
-routes for the hooks, and a `/ws` websocket for the dashboard — plus a test that
-connects two separate Bob-style clients and checks that they see each other.
-
-**Next:** connect the dashboard to `/ws` with Person 2, and connect Bob to `/mcp`
-with Person 3.
+**Next:** connect the dashboard to `/ws` with Gabriel, and connect Bob to `/mcp`
+and the hooks to `/api` with Alfonso.
 
 ---
 

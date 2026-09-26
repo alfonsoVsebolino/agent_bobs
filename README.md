@@ -32,12 +32,31 @@ Built by team **iMAGIC** for the IBM Bob 2.0 Hackathon, 25–27 September 2026.
 
 ## Status
 
-- ✅ Server core — claim and release, collision rules, 8 passing tests
-- 🔨 Server doors — MCP tools, `/api` for the hooks, `/ws` for the dashboard
-- 🔨 Dashboard, Bob integration and demo app — first tasks under way
+- ✅ Server — collision rules, MCP tools for Bob, `/api` for the hooks, `/ws` for
+  the dashboard; 13 passing tests
+- 🔨 Dashboard, Bob integration and demo app — under way
 
-## Run the core tests
+## Run the server
 
-No installs needed — the core uses only Python's standard library:
+On Windows, from the repo root. The one-time setup downloads the packages, so
+start it early on a slow connection:
 
-    py -m server.test_core
+    py -m venv .venv
+    .venv\Scripts\pip install -r server\requirements.txt
+
+Start the server. It keeps running until you press Ctrl+C:
+
+    .venv\Scripts\python -m server.main
+
+It listens on `http://127.0.0.1:8765`, on your own machine only. Bob connects to
+`/mcp`, the hooks post to `/api/claim` and `/api/release`, and the dashboard
+connects to `ws://127.0.0.1:8765/ws`.
+
+## Run the tests
+
+    .venv\Scripts\python -m server.test_core
+    .venv\Scripts\python -m server.test_server
+
+`test_core` checks the collision rules and needs no installs. `test_server`
+starts a real server on port 8799 and checks that MCP clients, the hook API and
+the websocket all share one state.
