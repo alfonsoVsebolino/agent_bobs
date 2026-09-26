@@ -19,6 +19,29 @@ For the Bob Usage Statement, each person sends Abrahm two or three sentences on
 how they used Bob. Describe each piece by what actually built it: the statement
 can be checked against the task summaries in `bob_sessions/`.
 
+## The lablab form itself
+
+lablab's submission form asks for more than the event page lists:
+
+| Field | Limit | Draft or plan |
+|---|---|---|
+| Submission title | 50 characters | "Agent Bobs — when one Bob isn't alone" (37) |
+| Short description | 255 characters | "When several developers run IBM Bob on one repo, their agents can't see each other and break each other's code in ways git never flags. Agent Bobs lets every Bob session see the others, and stops a Bob before it writes over another's work." (239) |
+| Long description | 500 words (event rule) | Abrahm |
+| Cover image | 16:9, e.g. 1920×1080 | Gabriel — the dashboard catching a collision, with the title |
+| Video | 3 minutes (event rule), 300 MB | Abrahm |
+| GitHub repository | — | github.com/alfonsoVsebolino/pulse_mcp.dev |
+| Demo application platform / URL | — | it runs locally; say so, and link the README's "Run the demo" |
+
+## Rules that are easy to miss
+
+- **"Submissions must be original and MIT-compliant."** The repo is MIT-licensed
+  (`LICENSE`). Everything was built during the event, and every dependency is
+  permissively licensed.
+- **Participant rewards:** 20 participants get $100 each for submitting a
+  qualified project on time **and** completing the post-hackathon feedback form.
+  After we submit, **everyone fills in the feedback form.**
+
 ## Judging criteria
 
 No weights are published.
