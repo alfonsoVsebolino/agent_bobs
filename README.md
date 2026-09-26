@@ -19,6 +19,7 @@ Built by team **iMAGIC** for the IBM Bob 2.0 Hackathon, 25–27 September 2026.
 3. [`docs/DECISIONS.md`](docs/DECISIONS.md) — what changed from the PDFs, and why.
 4. [`docs/PITCH.md`](docs/PITCH.md) — the story for the video and the writeup.
 5. [`docs/SUBMISSION.md`](docs/SUBMISSION.md) — what to submit, the judging criteria, the deadline.
+6. [`docs/RESULTS.md`](docs/RESULTS.md) — measured results: the control run, and the Agent Bobs run.
 
 ## Repo layout
 
