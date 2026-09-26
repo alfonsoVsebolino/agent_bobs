@@ -575,6 +575,29 @@ header {
   color: rgba(220,80,80,0.75);
 }
 
+/* Card exit */
+@keyframes card-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(10px); }
+}
+.col.removing {
+  animation: card-out 0.28s ease forwards !important;
+  pointer-events: none;
+}
+
+/* Settled card — no entrance animation; colour/shadow transitions handle changes */
+.col.settled {
+  opacity: 1;
+  transform: translateY(0);
+  animation: none !important;
+}
+.col.settled.blocked {
+  animation: breathe-red 3.8s ease-in-out 0s infinite !important;
+}
+.col.settled.blocked:hover {
+  animation: none !important;
+}
+
 /* Flash animation for scroll-to target */
 @keyframes col-flash {
   0%   { box-shadow: inset 0 1px 0 var(--inner-hl), 0 16px 48px rgba(0,0,0,0.65), 0 0 60px rgba(255,200,60,0.55); }
@@ -726,32 +749,205 @@ function drawConnectors(sessionPairs) {
   });
 }
 
-// ── render(sessions) ─────────────────────────────────────────────────────
+// ── Serialise a session for change-detection ─────────────────────────────
 
-var _lastSessions = null;
+function sessionKey(s) {
+  return JSON.stringify({
+    status:   s.status,
+    files:    (s.files   || []).slice().sort(),
+    symbols:  (s.symbols || []).slice().sort(),
+    calls:    (s.calls   || []).slice().sort(),
+    conflict: s.conflict
+      ? { with: s.conflict.with, reason: s.conflict.reason, type: s.conflict.type || '' }
+      : null
+  });
+}
+
+// ── Build a conflict box element ──────────────────────────────────────────
+
+function makeConflictBox(conflict) {
+  var box = document.createElement('div');
+  box.className = 'conflict-box';
+
+  var clbl = document.createElement('div');
+  clbl.className = 'conflict-label';
+  clbl.textContent = '\u26A0  Conflict';
+  box.appendChild(clbl);
+
+  var cwith = document.createElement('div');
+  cwith.className = 'conflict-with';
+  cwith.textContent = 'with ' + conflict.with;
+  cwith.dataset.conflictTarget = conflict.with;
+  cwith.addEventListener('click', function() {
+    var target = document.querySelector('[data-session="' + conflict.with + '"]');
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    target.classList.remove('flash');
+    void target.offsetWidth;
+    target.classList.add('flash');
+    setTimeout(function() { target.classList.remove('flash'); }, 950);
+  });
+  box.appendChild(cwith);
+
+  var creason = document.createElement('div');
+  creason.className = 'conflict-reason';
+  creason.textContent = conflict.reason;
+  box.appendChild(creason);
+
+  var ctype = document.createElement('div');
+  ctype.className = 'conflict-type';
+  ctype.textContent = (conflict.type || '').replace('_', ' ');
+  box.appendChild(ctype);
+
+  return box;
+}
+
+// ── Build a brand-new card element ────────────────────────────────────────
+
+var _cardStagger = 0;
+
+function buildCard(s) {
+  var hasConflict = s.conflict != null;
+  var isBlocked   = s.status === 'blocked';
+
+  var col = document.createElement('div');
+  col.className = 'col ' +
+    (hasConflict ? 'blocked' : 'working') +
+    (hasConflict && !isBlocked ? ' conflicted' : '') +
+    (!hasConflict ? ' clean' : '');
+  col.dataset.session = s.session;
+
+  // Apply stagger via inline custom property so nth-child shifts don't matter
+  var delay = _cardStagger * 0.07;
+  col.style.setProperty('--stagger', delay + 's');
+  _cardStagger++;
+
+  // Header (static — session name never changes)
+  var hdr = document.createElement('div');
+  hdr.className = 'col-header';
+  var dot = document.createElement('div');
+  dot.className = 'dot';
+  var nameEl = document.createElement('div');
+  nameEl.className = 'session-name';
+  nameEl.textContent = s.session;
+  hdr.appendChild(dot);
+  hdr.appendChild(nameEl);
+  col.appendChild(hdr);
+
+  // Status badge
+  var badge = document.createElement('div');
+  badge.className = 'status-badge';
+  badge.textContent = s.status;
+  col.appendChild(badge);
+
+  // Tag sections
+  var filesEl = makeSection('Files', s.files, '');
+  if (filesEl) col.appendChild(filesEl);
+  var symEl = makeSection('Changing', s.symbols, '()');
+  if (symEl) col.appendChild(symEl);
+  var callsEl = makeSection('Calling', s.calls, '()');
+  if (callsEl) col.appendChild(callsEl);
+
+  // Conflict box
+  if (s.conflict) col.appendChild(makeConflictBox(s.conflict));
+
+  return col;
+}
+
+// ── Update an existing card in-place ─────────────────────────────────────
+
+function updateCard(col, s) {
+  var hasConflict = s.conflict != null;
+  var isBlocked   = s.status === 'blocked';
+
+  // Recompute class without touching animation classes
+  var baseClass = 'col settled ' +
+    (hasConflict ? 'blocked' : 'working') +
+    (hasConflict && !isBlocked ? ' conflicted' : '') +
+    (!hasConflict ? ' clean' : '');
+  // preserve flash class if present
+  if (col.classList.contains('flash')) baseClass += ' flash';
+  col.className = baseClass;
+
+  // Status badge
+  var badge = col.querySelector('.status-badge');
+  if (badge) badge.textContent = s.status;
+
+  // Tag sections — rebuild if the arrays changed (makeSection is idempotent/cheap)
+  replaceSection(col, 'Files',    s.files,   '');
+  replaceSection(col, 'Changing', s.symbols, '()');
+  replaceSection(col, 'Calling',  s.calls,   '()');
+
+  // Conflict box
+  var existingBox = col.querySelector('.conflict-box');
+  if (s.conflict) {
+    var newBox = makeConflictBox(s.conflict);
+    if (existingBox) {
+      col.replaceChild(newBox, existingBox);
+    } else {
+      col.appendChild(newBox);
+    }
+  } else if (existingBox) {
+    col.removeChild(existingBox);
+  }
+}
+
+function replaceSection(col, label, items, suffix) {
+  // Find the existing section by its label text
+  var existing = null;
+  var labels = col.querySelectorAll('.section-label');
+  for (var i = 0; i < labels.length; i++) {
+    if (labels[i].textContent === label) {
+      existing = labels[i].parentNode;
+      break;
+    }
+  }
+  var fresh = makeSection(label, items, suffix);
+  if (fresh && existing) {
+    col.replaceChild(fresh, existing);
+  } else if (fresh && !existing) {
+    // Insert before the conflict box if present, else append
+    var box = col.querySelector('.conflict-box');
+    if (box) col.insertBefore(fresh, box); else col.appendChild(fresh);
+  } else if (!fresh && existing) {
+    col.removeChild(existing);
+  }
+}
+
+// ── render(sessions) — in-place diffing ──────────────────────────────────
+
+var _lastSessions = null;   // last array we rendered
+var _cardMap      = {};     // session name → { el, key }
+var _cardKeys     = {};     // session name → last serialised key
 
 function render(sessions) {
-  _lastSessions = sessions;
-
   var board    = document.getElementById('board');
   var waiting  = document.getElementById('waiting');
   var abSide   = document.getElementById('ab-side');
   var abIcon   = document.getElementById('ab-icon');
   var abResult = document.getElementById('ab-result');
 
-  board.innerHTML = '';
-  board.classList.remove('dimmed');
-  drawConnectors([]);
+  // ── Early-out: identical data ──────────────────────────────────────────
+  var incomingStr = JSON.stringify(sessions);
+  if (_lastSessions !== null && incomingStr === JSON.stringify(_lastSessions)) return;
+  _lastSessions = sessions ? JSON.parse(incomingStr) : sessions;
 
+  board.classList.remove('dimmed');
+
+  // ── Empty state ────────────────────────────────────────────────────────
   if (!sessions || sessions.length === 0) {
+    // Fade out all existing cards then clear
+    Object.keys(_cardMap).forEach(function(name) { removeCard(name); });
     waiting.classList.add('visible');
     abSide.classList.remove('alert');
     abIcon.textContent = '\u2713';
     abResult.textContent = '0 collisions';
+    scheduleConnectors([]);
     return;
   }
   waiting.classList.remove('visible');
 
+  // ── Comparison panel ───────────────────────────────────────────────────
   var collisions = sessions.filter(function(s) { return s.conflict != null; }).length;
   if (collisions > 0) {
     abSide.classList.add('alert');
@@ -763,122 +959,107 @@ function render(sessions) {
     abResult.textContent = '0 collisions';
   }
 
-  sessions.forEach(function(s) {
-    var hasConflict = s.conflict != null;
-    var isBlocked   = s.status === 'blocked';
+  // ── Build incoming index ───────────────────────────────────────────────
+  var incoming = {};
+  sessions.forEach(function(s) { incoming[s.session] = s; });
 
-    var col = document.createElement('div');
-    col.className = 'col ' +
-      (hasConflict ? 'blocked' : 'working') +
-      (hasConflict && !isBlocked ? ' conflicted' : '') +
-      (!hasConflict ? ' clean' : '');
-    col.dataset.session = s.session;
-
-    // Header
-    var hdr = document.createElement('div');
-    hdr.className = 'col-header';
-    var dot = document.createElement('div');
-    dot.className = 'dot';
-    var nameEl = document.createElement('div');
-    nameEl.className = 'session-name';
-    nameEl.textContent = s.session;
-    hdr.appendChild(dot);
-    hdr.appendChild(nameEl);
-    col.appendChild(hdr);
-
-    // Status badge
-    var badge = document.createElement('div');
-    badge.className = 'status-badge';
-    badge.textContent = s.status;
-    col.appendChild(badge);
-
-    // Sections
-    var filesEl = makeSection('Files', s.files, '');
-    if (filesEl) col.appendChild(filesEl);
-
-    var symEl = makeSection('Changing', s.symbols, '()');
-    if (symEl) col.appendChild(symEl);
-
-    var callsEl = makeSection('Calling', s.calls, '()');
-    if (callsEl) col.appendChild(callsEl);
-
-    // Conflict box
-    if (s.conflict) {
-      var box = document.createElement('div');
-      box.className = 'conflict-box';
-
-      var clbl = document.createElement('div');
-      clbl.className = 'conflict-label';
-      clbl.textContent = '\u26A0  Conflict';
-      box.appendChild(clbl);
-
-      var cwith = document.createElement('div');
-      cwith.className = 'conflict-with';
-      cwith.textContent = 'with ' + s.conflict.with;
-      // click → scroll to & flash target column
-      (function(targetName) {
-        cwith.addEventListener('click', function() {
-          var target = document.querySelector('[data-session="' + targetName + '"]');
-          if (!target) return;
-          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          target.classList.remove('flash');
-          void target.offsetWidth; // reflow to restart animation
-          target.classList.add('flash');
-          setTimeout(function() { target.classList.remove('flash'); }, 950);
-        });
-      })(s.conflict.with);
-      box.appendChild(cwith);
-
-      var creason = document.createElement('div');
-      creason.className = 'conflict-reason';
-      creason.textContent = s.conflict.reason;
-      box.appendChild(creason);
-
-      var ctype = document.createElement('div');
-      ctype.className = 'conflict-type';
-      ctype.textContent = (s.conflict.type || '').replace('_', ' ');
-      box.appendChild(ctype);
-
-      col.appendChild(box);
-    }
-
-    board.appendChild(col);
+  // ── Remove cards no longer present ────────────────────────────────────
+  Object.keys(_cardMap).forEach(function(name) {
+    if (!incoming[name]) removeCard(name);
   });
 
-  // Wire tag hover cross-highlight
+  // ── Add new / update existing, preserving DOM order ───────────────────
+  _cardStagger = 0;
+  sessions.forEach(function(s, idx) {
+    var newKey = sessionKey(s);
+
+    if (!_cardMap[s.session]) {
+      // New session — build and insert in the right position
+      var col = buildCard(s);
+      var afterEl = idx === 0 ? null : findColAfter(sessions, idx);
+      if (afterEl) {
+        board.insertBefore(col, afterEl.nextSibling);
+      } else {
+        // Prepend or append based on whether there's a first card
+        var firstSib = board.querySelector('.col:not(.removing)');
+        if (idx === 0 || !firstSib) {
+          board.insertBefore(col, board.firstChild);
+        } else {
+          board.appendChild(col);
+        }
+      }
+      _cardMap[s.session] = col;
+      _cardKeys[s.session] = newKey;
+    } else if (_cardKeys[s.session] !== newKey) {
+      // Existing session with changed data — update in-place
+      updateCard(_cardMap[s.session], s);
+      _cardKeys[s.session] = newKey;
+    }
+    // else: identical — touch nothing
+  });
+
+  // ── Rewire tag highlights (new tags may have appeared) ─────────────────
   wireTagHighlight();
 
-  // Draw connector lines after DOM settles
-  requestAnimationFrame(function() {
-    var pairs = [];
-    var seen  = {};
-    sessions.forEach(function(s) {
-      if (!s.conflict) return;
-      var key = [s.session, s.conflict.with].sort().join('|');
-      if (!seen[key]) {
-        seen[key] = true;
-        pairs.push([s.session, s.conflict.with]);
-      }
-    });
-    drawConnectors(pairs);
+  // ── Recompute connectors ───────────────────────────────────────────────
+  var pairs = [];
+  var seen  = {};
+  sessions.forEach(function(s) {
+    if (!s.conflict) return;
+    var key = [s.session, s.conflict.with].sort().join('|');
+    if (!seen[key]) { seen[key] = true; pairs.push([s.session, s.conflict.with]); }
   });
+  scheduleConnectors(pairs);
+}
+
+// ── Helpers for in-place render ───────────────────────────────────────────
+
+function removeCard(name) {
+  var col = _cardMap[name];
+  if (!col) return;
+  delete _cardMap[name];
+  delete _cardKeys[name];
+  col.classList.add('removing');
+  setTimeout(function() {
+    if (col.parentNode) col.parentNode.removeChild(col);
+  }, 300);
+}
+
+// Returns the last .col (non-removing) that appears before position idx in sessions
+function findColAfter(sessions, idx) {
+  for (var i = idx - 1; i >= 0; i--) {
+    var col = _cardMap[sessions[i].session];
+    if (col && !col.classList.contains('removing')) return col;
+  }
+  return null;
+}
+
+function scheduleConnectors(pairs) {
+  requestAnimationFrame(function() { drawConnectors(pairs); });
 }
 
 // ── Tag cross-highlight ───────────────────────────────────────────────────
 
 function wireTagHighlight() {
+  // Remove old listeners by replacing all tags with clones, then re-bind
   var allTags = document.querySelectorAll('.tag');
 
   allTags.forEach(function(tag) {
+    var fresh = tag.cloneNode(true);
+    tag.parentNode.replaceChild(fresh, tag);
+  });
+
+  var allFresh = document.querySelectorAll('.tag');
+  allFresh.forEach(function(tag) {
     tag.addEventListener('mouseenter', function() {
       var key = tag.dataset.tagKey;
       if (!key) return;
-      allTags.forEach(function(t) {
+      allFresh.forEach(function(t) {
         if (t.dataset.tagKey === key) t.classList.add('highlighted');
       });
     });
     tag.addEventListener('mouseleave', function() {
-      allTags.forEach(function(t) { t.classList.remove('highlighted'); });
+      allFresh.forEach(function(t) { t.classList.remove('highlighted'); });
     });
   });
 }
@@ -1004,8 +1185,11 @@ function connect() {
       setConnected('disconnected');
       if (lastReal !== null) {
         render(lastReal);
-        document.getElementById('board').classList.add('dimmed');
       }
+      // dim after render (render clears dimmed first, so apply after)
+      requestAnimationFrame(function() {
+        document.getElementById('board').classList.add('dimmed');
+      });
     } else {
       setConnected('offline');
       render(FAKE_DATA);
@@ -1019,8 +1203,10 @@ function onFailed() {
     setConnected('disconnected');
     if (lastReal !== null) {
       render(lastReal);
-      document.getElementById('board').classList.add('dimmed');
     }
+    requestAnimationFrame(function() {
+      document.getElementById('board').classList.add('dimmed');
+    });
   } else {
     setConnected('offline');
     render(FAKE_DATA);
