@@ -13,6 +13,9 @@ node_modules/
 # Demo run copies live outside the repo; never commit them
 demo-*/
 
+# Hook debug logs
+hooklog.jsonl
+
 # OS / editor
 .DS_Store
 Thumbs.db

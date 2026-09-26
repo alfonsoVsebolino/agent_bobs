@@ -158,6 +158,7 @@ server/        MCP tools, /api routes, /ws, collision rules    Person 1
 dashboard/     the live screen, one column per active session  Person 2
 demo/          the sample app we break on purpose              Person 4
 demo/.bob/     Agent Bobs mode, MCP connection, hooks          Person 3
+harness/       builds the demo copies, merges, runs the tests  Person 1
 bob_sessions/  task-summary screenshots                        everyone, their own
 docs/          DECISIONS.md
 ```
@@ -175,6 +176,8 @@ Three Bob sessions, three copies of `demo/`, one laptop — said openly.
   stays green.
 - Run it twice: once **without** Agent Bobs (show the real git merge output and
   the real test failure), once with. Quote only numbers you measured.
+- `harness/` builds the three copies — with or without Agent Bobs — and merges
+  their work afterwards.
 
 ## Team rules
 

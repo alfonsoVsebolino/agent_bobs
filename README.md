@@ -27,6 +27,7 @@ Built by team **iMAGIC** for the IBM Bob 2.0 Hackathon, 25–27 September 2026.
 | `dashboard/` | the live screen | Person 2 |
 | `demo/` | the sample app we break on purpose | Person 4 |
 | `demo/.bob/` | the Bob mode, MCP connection and hooks for the demo | Person 3 |
+| `harness/` | builds the three demo copies, merges their work, runs the tests | Person 1 |
 | `bob_sessions/` | every participant's Bob task summaries | everyone |
 | `docs/` | roles, decisions, pitch | — |
 
@@ -34,7 +35,12 @@ Built by team **iMAGIC** for the IBM Bob 2.0 Hackathon, 25–27 September 2026.
 
 - ✅ Server — collision rules, MCP tools for Bob, `/api` for the hooks, `/ws` for
   the dashboard; 13 passing tests
-- 🔨 Dashboard, Bob integration and demo app — under way
+- ✅ Dashboard — live from the server's `/ws`; small fixes pending
+- 🔨 Bob integration — built in `demo/.bob/`; being proven in a real Bob
+- ✅ Demo app — 12 passing tests; a dry run of the control run gives 0 git
+  conflicts and failing tests, as the pitch says
+- ✅ Demo harness — builds the three demo copies, merges their work and runs the
+  tests; tested on Windows, including rebuilds and a conflict case
 
 ## Run the server
 
@@ -51,6 +57,63 @@ Start the server. It keeps running until you press Ctrl+C:
 It listens on `http://127.0.0.1:8765`, on your own machine only. Bob connects to
 `/mcp`, the hooks post to `/api/claim` and `/api/release`, and the dashboard
 connects to `ws://127.0.0.1:8765/ws`.
+
+## See it work without Bob
+
+Start the server and open `dashboard/index.html` in a browser. Then, in
+PowerShell, play three Bobs:
+
+```powershell
+$api = "http://127.0.0.1:8765/api"
+Invoke-RestMethod -Method Post "$api/claim" -ContentType application/json -Body '{"session":"aig","files":["auth/user.py"],"symbols":["get_user"]}'
+Invoke-RestMethod -Method Post "$api/claim" -ContentType application/json -Body '{"session":"jay","files":["auth/reset.py"],"calls":["get_user"]}'
+Invoke-RestMethod -Method Post "$api/claim" -ContentType application/json -Body '{"session":"kim","files":["tests/test_user.py"],"calls":["get_user"]}'
+```
+
+aig is renaming `get_user` while jay and kim both call it. The first claim comes
+back clear, the other two come back as conflicts, and the dashboard turns red.
+When aig finishes, jay and kim go back to green:
+
+```powershell
+Invoke-RestMethod -Method Post "$api/release" -ContentType application/json -Body '{"session":"aig"}'
+```
+
+Restart the server for a clean slate.
+
+## Run the demo
+
+The harness builds the three-session workspace, applies the demo edits, merges,
+and runs the tests — all from the repo root.
+
+**One-time setup** (no extra packages needed — stdlib only):
+
+    py harness\setup_demo.py
+
+This creates `%USERPROFILE%\agent-bobs-demo` with a `base/` git repo and three
+clones (`demo-aig`, `demo-jay`, `demo-kim`), each pre-loaded with `.bob/`.
+
+**Control run** (no Agent Bobs — shows the raw git + test failure):
+
+    py harness\setup_demo.py --without-agent-bobs --fresh
+
+**Open each session** in its own Bob window using the *Agent Bobs* mode:
+
+    %USERPROFILE%\agent-bobs-demo\demo-aig
+    %USERPROFILE%\agent-bobs-demo\demo-jay
+    %USERPROFILE%\agent-bobs-demo\demo-kim
+
+**After all three Bobs finish**, merge and run tests:
+
+    py harness\merge_demo.py
+
+This commits each session's work, merges them, runs `python -m unittest`, and
+prints the `file:///…/dashboard/index.html?git=<N>` link.
+
+**Run the harness self-test** (no Bob needed — exercises setup + merge end-to-end):
+
+    py harness\test_harness.py
+
+Exits 0 on success, non-zero on any failure.
 
 ## Run the tests
 

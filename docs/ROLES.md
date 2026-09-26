@@ -24,12 +24,38 @@ a push is rejected, ask Alfonso to add you as a collaborator on the repo.
 `/api` routes for the hooks, and the `/ws` websocket for the dashboard — with 13
 passing tests. How to run it is in the README.
 
-**Next:** connect the dashboard to `/ws` with Gabriel, and connect Bob to `/mcp`
-and the hooks to `/api` with Alfonso.
+**Also done:** the demo harness in `harness/`. `setup_demo.py` builds the three
+demo copies, with or without Agent Bobs; `merge_demo.py` merges their work, runs
+the tests and prints the dashboard link. See "Run the demo" in the README.
+
+**Next:** the first real control run — three Bobs in copies without Agent Bobs,
+then the merge — to measure the numbers for the pitch.
 
 ---
 
 ## Person 2 — Dashboard (Gabriel)
+
+**Built:** `dashboard/index.html` — live from the server's `/ws`: one column per
+session showing files, functions being changed and called, conflict boxes with
+the reason, connector lines, a waiting state and automatic reconnect. Tested
+against the real server with the three-Bob demo.
+
+**Next — so that every number on screen is true:**
+
+1. **Count collisions as pairs.** The panel counts sessions that have a conflict,
+   so the demo's two collisions (aig–jay and aig–kim) show as "3 collisions".
+   Count unique pairs, the same way the connector lines are drawn.
+2. **No fake data by default.** When the server is off, the page shows invented
+   collisions under a small "offline" badge. Show the waiting state instead, and
+   keep the sample data behind `index.html?demo`, with a clear "sample data" label.
+3. **Take the git number from a real merge.** "0 conflicts" is hard-coded. Read it
+   from the URL — `index.html?git=0`, set from the real `git merge` in the
+   control run — and show "—" when it isn't given.
+4. **Optional:** a Bob that holds a function but isn't blocked gets a red badge
+   too, so viewers can't tell who is blocked. Make the holder's badge neutral.
+5. ~~Rename your Bob screenshot~~ — done.
+
+### The first task
 
 You build the live screen the judges watch during the demo. You don't need the
 server to start: build it with fake data now and connect it later.
@@ -66,6 +92,31 @@ the page in the group chat.
 ---
 
 ## Person 3 — Bob integration (Alfonso)
+
+**Built:** the Bob integration in `demo/.bob/` — the MCP connection, the three
+hooks, the Agent Bobs mode and its rules. Running the hooks against the real
+server found two problems, so it isn't demo-ready yet.
+
+**Next — prove it in a real Bob, and fix what that shows:**
+
+1. **Claim only for tools that change files.** Today the hook claims every tool
+   that carries a path, so a Bob that only *reads* or *lists* a file gets
+   blocked, and every dashboard column turns red. The fix needs the exact names
+   of Bob's file-editing tools — question 1 of the first task below.
+2. **Find out when the Stop hook fires** — question 4 below. If it fires whenever
+   Bob pauses, for example right after telling the user about a conflict, remove
+   it from `settings.json` and let the mode's `release` call do the job.
+   Otherwise a blocked Bob vanishes from the dashboard the moment it's caught.
+3. **Let Bob explain a blocked write.** The hook's message goes to Bob's log, not
+   to Bob. Add a rule: if a write is blocked, call `check` on that file, then
+   tell the user who holds it and why.
+4. **Confirm in Bob** that the Agent Bobs mode appears in the mode list, the MCP
+   tab shows `agent-bobs` connected with 3 tools, and Bob knows its session name.
+5. **Replace the screenshot** `bob_sessions/image_alfonsovsebolino_sessionlog.png`
+   with the Task summary panel, named
+   `imagic_alfonsovsebolino_task01_bob_integration_summary.png`.
+
+### The first task — the hook experiment
 
 You make Bob check with our server before it edits anything. Your first job is
 the biggest unknown in the project: **proving Bob's hooks behave the way its docs
@@ -121,6 +172,32 @@ the Bob window.
 ---
 
 ## Person 4 — Demo and submission (Abrahm)
+
+**Built:** the sample app in `demo/` (12 passing tests) and `demo/TASKS.md`. A dry
+run of the control run with this app works exactly as the pitch says: each of
+the three edits passes its tests on its own, git merges all three with 0
+conflicts, and the merged code fails its tests.
+
+**Next:**
+
+1. **End tasks 2 and 3 in `TASKS.md` with "Don't change any other file."** If a
+   Bob puts its work into a file that aig is also editing — `tests/test_auth.py`
+   is the likely one — git can report a real conflict, and the "0 conflicts"
+   moment is gone.
+2. **In task 2, also ask for a test in a new file, `tests/test_reset.py`.** Today
+   the merged tests only catch kim's breakage. jay's `reset.py` is broken too,
+   but no test imports it.
+3. **One screenshot per task.** Keep the final one (1.19 Bobcoins), named
+   `imagic_johnabrahmzapico_task01_demo_app_summary.png`, and delete the earlier
+   copy and the misspelled name.
+4. **Your second job:** everything the lablab submission form asks for, and the
+   exact deadline.
+5. **Optional:** "The demo" in AGENTS.md also asks for one same-file collision
+   where a hook visibly blocks a write. It doesn't fit these three tasks without
+   risking a git conflict, so make it a short separate scene — Alfonso's
+   two-window test is exactly that.
+
+### The first task
 
 You own the sample app we break on purpose, and later the video and the writeup.
 The demo app comes first, and it doesn't need the server.
