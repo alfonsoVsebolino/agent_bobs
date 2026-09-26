@@ -226,4 +226,4 @@ is unchanged.
 | 0 | Fri 25 Sep, 23:00 | Kickoff |
 | 28 | **Sun** 27 Sep, 03:00 | Stretch goals allowed only if ahead |
 | 36 | Sun 27 Sep, 11:00 | **Feature freeze** — video and writeup only after this |
-| 48 | Sun 27 Sep, 23:00 | Deadline (unconfirmed — see above) |
+| 48 | Sun 27 Sep, 23:00 | **Deadline** (confirmed) — submit by 21:00 |
