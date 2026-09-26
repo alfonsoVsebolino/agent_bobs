@@ -54,6 +54,28 @@ It listens on `http://127.0.0.1:8765`, on your own machine only. Bob connects to
 `/mcp`, the hooks post to `/api/claim` and `/api/release`, and the dashboard
 connects to `ws://127.0.0.1:8765/ws`.
 
+## See it work without Bob
+
+Start the server and open `dashboard/index.html` in a browser. Then, in
+PowerShell, play three Bobs:
+
+```powershell
+$api = "http://127.0.0.1:8765/api"
+Invoke-RestMethod -Method Post "$api/claim" -ContentType application/json -Body '{"session":"aig","files":["auth/user.py"],"symbols":["get_user"]}'
+Invoke-RestMethod -Method Post "$api/claim" -ContentType application/json -Body '{"session":"jay","files":["auth/reset.py"],"calls":["get_user"]}'
+Invoke-RestMethod -Method Post "$api/claim" -ContentType application/json -Body '{"session":"kim","files":["tests/test_user.py"],"calls":["get_user"]}'
+```
+
+aig is renaming `get_user` while jay and kim both call it. The first claim comes
+back clear, the other two come back as conflicts, and the dashboard turns red.
+When aig finishes, jay and kim go back to green:
+
+```powershell
+Invoke-RestMethod -Method Post "$api/release" -ContentType application/json -Body '{"session":"aig"}'
+```
+
+Restart the server for a clean slate.
+
 ## Run the tests
 
     .venv\Scripts\python -m server.test_core
