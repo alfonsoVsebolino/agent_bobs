@@ -158,6 +158,57 @@ def claim(
         return {"clear": True, "conflict": None}
 
 
+def check(
+    session_id: str,
+    files: list[str],
+    symbols: list[str],
+    calls: list[str],
+) -> dict:
+    """Read-only conflict check: same detection logic as claim(), but records nothing.
+
+    Computes what the session's accumulated sets *would* be after adding the
+    given files/symbols/calls to any existing record, then runs detect() against
+    those sets.  The STATE dict is never mutated.
+
+    Returns {"clear": True, "conflict": None} if no conflict would result.
+    Returns {"clear": False, "conflict": {...}} if a conflict would exist.
+    """
+    from .collision import detect  # local import avoids circular at module level
+
+    with _LOCK:
+        existing = STATE.get(session_id)
+        acc_files   = list(existing.files)   if existing else []
+        acc_symbols = list(existing.symbols) if existing else []
+        acc_calls   = list(existing.calls)   if existing else []
+
+        seen_f = set(normalise_path(f) for f in acc_files)
+        for f in files:
+            nf = normalise_path(f)
+            if nf not in seen_f:
+                acc_files.append(f)
+                seen_f.add(nf)
+
+        seen_s = set(s.lower() for s in acc_symbols)
+        for s in symbols:
+            if s.lower() not in seen_s:
+                acc_symbols.append(s)
+                seen_s.add(s.lower())
+
+        seen_c = set(c.lower() for c in acc_calls)
+        for c in calls:
+            if c.lower() not in seen_c:
+                acc_calls.append(c)
+                seen_c.add(c.lower())
+
+        conflict_info = detect(
+            session_id, acc_files, acc_symbols, acc_calls, STATE
+        )
+
+        if conflict_info:
+            return {"clear": False, "conflict": conflict_info}
+        return {"clear": True, "conflict": None}
+
+
 def release(session_id: str) -> None:
     """Remove a session and un-block any session that was blocked by it."""
     with _LOCK:
