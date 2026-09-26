@@ -31,6 +31,28 @@ and the hooks to `/api` with Alfonso.
 
 ## Person 2 — Dashboard (Gabriel)
 
+**Built:** `dashboard/index.html` — live from the server's `/ws`: one column per
+session showing files, functions being changed and called, conflict boxes with
+the reason, connector lines, a waiting state and automatic reconnect. Tested
+against the real server with the three-Bob demo.
+
+**Next — so that every number on screen is true:**
+
+1. **Count collisions as pairs.** The panel counts sessions that have a conflict,
+   so the demo's two collisions (aig–jay and aig–kim) show as "3 collisions".
+   Count unique pairs, the same way the connector lines are drawn.
+2. **No fake data by default.** When the server is off, the page shows invented
+   collisions under a small "offline" badge. Show the waiting state instead, and
+   keep the sample data behind `index.html?demo`, with a clear "sample data" label.
+3. **Take the git number from a real merge.** "0 conflicts" is hard-coded. Read it
+   from the URL — `index.html?git=0`, set from the real `git merge` in the
+   control run — and show "—" when it isn't given.
+4. **Optional:** a Bob that holds a function but isn't blocked gets a red badge
+   too, so viewers can't tell who is blocked. Make the holder's badge neutral.
+5. **Add your Bob task summaries** to `bob_sessions/`.
+
+### The first task
+
 You build the live screen the judges watch during the demo. You don't need the
 server to start: build it with fake data now and connect it later.
 
