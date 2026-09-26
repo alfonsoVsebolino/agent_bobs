@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Bobs — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
+:root {
+  --bg:           #06080c;
+  --card-border:  rgba(255,255,255,0.07);
+  --inner-hl:     rgba(255,255,255,0.06);
+
+  --text-primary: #e8edf5;
+  --text-muted:   #7a8499;
+  --text-faint:   #3d4559;
+
+  --green-accent: #3ee065;
+  --green-border: rgba(46,180,80,0.45);
+  --green-fill:   rgba(30,120,55,0.18);
+
+  --red-accent:   #ff5c57;
+  --red-border:   rgba(220,60,55,0.55);
+  --red-fill:     rgba(160,30,30,0.22);
+
+  --neutral-bg:     rgba(255,255,255,0.06);
+  --neutral-border: rgba(255,255,255,0.12);
+
+  --r-card:  18px;
+  --r-inner: 12px;
+  --r-tag:   8px;
+  --r-badge: 24px;
+  --gap:     26px;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Poppins', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ── Ambient background blurs ────────────────────────────────────────────── */
+/* Fixed orbs that drift slowly behind everything */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+}
+.bg-orb-blue {
+  width: 600px; height: 500px;
+  top: -120px; left: -80px;
+  background: radial-gradient(ellipse, rgba(50,90,255,0.13) 0%, transparent 70%);
+  animation: drift-a 22s ease-in-out infinite alternate;
+}
+.bg-orb-purple {
+  width: 500px; height: 420px;
+  top: -60px; right: -100px;
+  background: radial-gradient(ellipse, rgba(140,60,255,0.10) 0%, transparent 70%);
+  animation: drift-b 28s ease-in-out infinite alternate;
+}
+.bg-orb-red {
+  width: 560px; height: 400px;
+  bottom: -80px; left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(200,40,40,0.09) 0%, transparent 70%);
+  animation: drift-c 18s ease-in-out infinite alternate;
+}
+
+@keyframes drift-a {
+  from { transform: translate(0px,    0px); }
+  to   { transform: translate(40px,  50px); }
+}
+@keyframes drift-b {
+  from { transform: translate(0px,    0px); }
+  to   { transform: translate(-30px, 40px); }
+}
+@keyframes drift-c {
+  from { transform: translateX(-50%) translateY(0px); }
+  to   { transform: translateX(-50%) translateY(-40px); }
+}
+
+/* ── Layout wrapper (sits above orbs) ────────────────────────────────────── */
+#app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+header {
+  padding: 26px 36px 22px;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-left h1 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #ffffff 0%, rgba(255,255,255,0.38) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-left p {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+/* ── Connection badge ────────────────────────────────────────────────────── */
+#conn-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: var(--r-badge);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  border: 1px solid var(--neutral-border);
+  background: var(--neutral-bg);
+  color: var(--text-muted);
+  transition: background 0.4s, color 0.4s, border-color 0.4s;
+}
+#conn-badge.connecting {
+  background: rgba(80,140,255,0.08);
+  color: #6ea8fe;
+  border-color: rgba(80,140,255,0.30);
+}
+#conn-badge.live {
+  background: var(--green-fill);
+  color: var(--green-accent);
+  border-color: var(--green-border);
+}
+#conn-badge.offline {
+  background: var(--neutral-bg);
+  color: var(--text-muted);
+  border-color: var(--neutral-border);
+}
+#conn-badge.disconnected {
+  background: rgba(255,180,0,0.08);
+  color: #f0a500;
+  border-color: rgba(255,180,0,0.35);
+}
+
+.conn-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+#conn-badge.live .conn-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── Comparison panel ────────────────────────────────────────────────────── */
+#compare {
+  display: flex;
+  margin: 24px 36px 0;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 var(--inner-hl);
+}
+.compare-side {
+  flex: 1;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--green-fill);
+  transition: background 0.4s;
+}
+.compare-side:first-child { border-right: 1px solid var(--card-border); }
+.compare-side.alert { background: var(--red-fill); }
+
+.compare-icon {
+  font-size: 30px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.compare-side:first-child .compare-icon { color: var(--green-accent); }
+.compare-side:not(.alert) .compare-icon { color: var(--green-accent); }
+.compare-side.alert .compare-icon        { color: var(--red-accent); }
+
+.compare-tool {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.compare-result {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+}
+.compare-side:first-child .compare-result          { color: var(--green-accent); }
+.compare-side:not(.alert):last-child .compare-result { color: var(--green-accent); }
+.compare-side.alert .compare-result                  { color: var(--red-accent); }
+
+/* ── Disconnected banner ─────────────────────────────────────────────────── */
+#disc-banner {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 36px 0;
+  padding: 12px 20px;
+  border-radius: var(--r-inner);
+  background: rgba(255,180,0,0.08);
+  border: 1px solid rgba(255,180,0,0.28);
+  color: #f0a500;
+  font-size: 14px;
+  font-weight: 600;
+}
+#disc-banner.visible { display: flex; }
+
+/* ── Waiting state ────────────────────────────────────────────────────────── */
+#waiting {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 36px;
+  gap: 28px;
+}
+#waiting.visible { display: flex; }
+
+.radar-wrap {
+  position: relative;
+  width: 110px; height: 110px;
+}
+.radar-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.08);
+}
+.radar-ring-inner {
+  position: absolute;
+  inset: 25%;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.08);
+}
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 260deg, rgba(62,224,101,0.28) 360deg);
+  animation: sweep 2.6s linear infinite;
+}
+.radar-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green-accent);
+  box-shadow: 0 0 8px var(--green-accent);
+}
+@keyframes sweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+#waiting-text {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
+}
+
+/* ── Board + SVG overlay ─────────────────────────────────────────────────── */
+#board-wrap {
+  position: relative;
+  flex: 1;
+}
+
+#connector-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  overflow: visible;
+}
+
+#board {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  padding: 24px 36px 40px;
+  flex: 1;
+  align-items: flex-start;
+}
+
+#board.dimmed .col {
+  opacity: 0.42;
+  filter: grayscale(0.4) blur(0.5px);
+  transition: opacity 0.5s, filter 0.5s;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────────── */
+.col {
+  flex: 1 1 280px;
+  border-radius: var(--r-card);
+  border: 1px solid var(--card-border);
+  background:
+    linear-gradient(160deg,
+      rgba(255,255,255,0.045) 0%,
+      rgba(255,255,255,0.01)  60%,
+      rgba(0,0,0,0.12)        100%),
+    linear-gradient(160deg, #111520 0%, #0c0e18 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 var(--inner-hl),
+    0 2px 0 rgba(255,255,255,0.02),
+    0 16px 48px rgba(0,0,0,0.65),
+    0 4px  12px rgba(0,0,0,0.40);
+  padding: 26px 24px 24px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  cursor: default;
+
+  /* entrance — opacity+transform start values */
+  opacity: 0;
+  transform: translateY(14px);
+
+  /* transition for hover lift */
+  transition:
+    border-color 0.25s,
+    box-shadow   0.25s,
+    transform    0.22s ease;
+}
+
+/* Entrance keyframe — card-in only; breathe-red is declared separately */
+@keyframes card-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Working card */
+.col.working {
+  border-color: var(--green-border);
+  /* animation: name duration timing fill-mode  [, name duration timing delay fill-mode] */
+  animation: card-in 0.35s ease forwards;
+}
+
+/* Blocked card — card-in finishes at 0.35s, breathe-red starts after with its own 0.35s delay */
+.col.blocked {
+  border-color: var(--red-border);
+  background:
+    linear-gradient(160deg,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.01) 60%,
+      rgba(0,0,0,0.12)       100%),
+    linear-gradient(160deg, #18090e 0%, #100710 100%);
+  box-shadow:
+    inset 0 1px 0 var(--inner-hl),
+    0 16px 48px rgba(0,0,0,0.65),
+    0 0 32px rgba(200,40,40,0.20);
+  animation:
+    card-in    0.35s ease         0s       forwards,
+    breathe-red 3.8s ease-in-out  0.35s   infinite;
+}
+
+@keyframes breathe-red {
+  0%, 100% {
+    box-shadow:
+      inset 0 1px 0 var(--inner-hl),
+      0 16px 48px rgba(0,0,0,0.65),
+      0 0 28px rgba(200,40,40,0.14);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 var(--inner-hl),
+      0 16px 48px rgba(0,0,0,0.65),
+      0 0 52px rgba(220,55,55,0.34);
+  }
+}
+
+/* Stagger only card-in via custom property on each nth-child.
+   Working cards use animation shorthand with no delay slot for breathe-red,
+   so the delay only touches card-in. For blocked cards, the delay is explicit
+   in the comma-separated shorthand above — these rules override card-in's delay. */
+.col:nth-child(1) { --stagger: 0s;    }
+.col:nth-child(2) { --stagger: 0.07s; }
+.col:nth-child(3) { --stagger: 0.14s; }
+.col:nth-child(4) { --stagger: 0.21s; }
+.col:nth-child(5) { --stagger: 0.28s; }
+
+.col.working {
+  animation: card-in 0.35s ease var(--stagger, 0s) forwards;
+}
+.col.blocked {
+  animation:
+    card-in    0.35s ease           var(--stagger, 0s) forwards,
+    breathe-red 3.8s ease-in-out   calc(var(--stagger, 0s) + 0.35s) infinite;
+}
+
+/* Hover lift */
+.col:hover {
+  transform: translateY(-3px);
+}
+.col.working:hover {
+  border-color: rgba(62,224,101,0.70);
+  box-shadow:
+    inset 0 1px 0 var(--inner-hl),
+    0 20px 56px rgba(0,0,0,0.70),
+    0 0 20px rgba(62,224,101,0.10);
+}
+.col.blocked:hover {
+  border-color: rgba(220,60,55,0.80);
+  box-shadow:
+    inset 0 1px 0 var(--inner-hl),
+    0 20px 56px rgba(0,0,0,0.70),
+    0 0 40px rgba(220,55,55,0.38);
+}
+/* suppress breathe-red during hover so the hover glow dominates */
+.col.blocked:hover {
+  animation: card-in 0.35s ease var(--stagger, 0s) forwards;
+}
+
+/* ── Session name row ────────────────────────────────────────────────────── */
+.col-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.dot {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.working .dot { background: var(--green-accent); box-shadow: 0 0 8px rgba(62,224,101,0.5); }
+.blocked .dot { background: var(--red-accent);   box-shadow: 0 0 8px rgba(255,92,87,0.5); }
+
+.session-name {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.working .session-name { color: var(--green-accent); }
+.blocked .session-name { color: var(--red-accent); }
+
+/* ── Status badge ────────────────────────────────────────────────────────── */
+.status-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: var(--r-badge);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+.working.clean      .status-badge { background: var(--green-fill);   color: var(--green-accent); border: 1px solid var(--green-border); }
+.working.conflicted .status-badge { background: var(--neutral-bg);   color: var(--text-muted);   border: 1px solid var(--neutral-border); }
+.blocked            .status-badge { background: var(--red-fill);     color: var(--red-accent);   border: 1px solid var(--red-border); }
+
+/* ── Section labels & tags ───────────────────────────────────────────────── */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 7px;
+}
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.tag {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: var(--r-tag);
+  padding: 4px 11px;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-weight: 400;
+  color: #b0bdd0;
+  word-break: break-all;
+  cursor: default;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+/* cross-column highlight */
+.tag.highlighted {
+  background: rgba(255,230,60,0.13);
+  border-color: rgba(255,210,40,0.55);
+  color: #ffe566;
+}
+
+/* ── Conflict box ────────────────────────────────────────────────────────── */
+.conflict-box {
+  background: rgba(160,30,30,0.28);
+  border: 1px solid var(--red-border);
+  border-radius: var(--r-inner);
+  padding: 16px 18px;
+  box-shadow: inset 0 1px 0 rgba(255,92,87,0.08);
+}
+.conflict-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--red-accent);
+  margin-bottom: 7px;
+  opacity: 0.85;
+}
+.conflict-with {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 7px;
+  cursor: pointer;
+  display: inline-block;
+  transition: color 0.15s;
+}
+.conflict-with:hover { color: var(--red-accent); }
+
+.conflict-reason {
+  font-size: 17px;
+  font-weight: 500;
+  color: #ffada8;
+  line-height: 1.6;
+}
+.conflict-type {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(220,80,80,0.75);
+}
+
+/* Flash animation for scroll-to target */
+@keyframes col-flash {
+  0%   { box-shadow: inset 0 1px 0 var(--inner-hl), 0 16px 48px rgba(0,0,0,0.65), 0 0 60px rgba(255,200,60,0.55); }
+  100% { box-shadow: inset 0 1px 0 var(--inner-hl), 0 16px 48px rgba(0,0,0,0.65), 0 0 0px rgba(255,200,60,0); }
+}
+.col.flash {
+  animation: col-flash 0.9s ease-out forwards !important;
+}
+
+/* Connector SVG paths */
+.conflict-line {
+  fill: none;
+  stroke: rgba(220,60,55,0.65);
+  stroke-width: 2;
+  stroke-dasharray: 8 6;
+  animation: dash-flow 1.4s linear infinite;
+}
+@keyframes dash-flow {
+  to { stroke-dashoffset: -28; }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient orbs -->
+<div class="bg-orb bg-orb-blue"></div>
+<div class="bg-orb bg-orb-purple"></div>
+<div class="bg-orb bg-orb-red"></div>
+
+<div id="app">
+
+<header>
+  <div class="header-left">
+    <h1>Agent Bobs</h1>
+    <p>Live session coordination — conflicts detected before they hit the repo</p>
+  </div>
+  <div id="conn-badge" class="connecting">
+    <div class="conn-dot"></div>
+    <span id="conn-text">connecting</span>
+  </div>
+</header>
+
+<!-- Disconnected mid-session banner -->
+<div id="disc-banner">
+  <span>&#9888;</span>
+  <span>Connection lost — retrying&hellip;</span>
+</div>
+
+<!-- Comparison panel -->
+<div id="compare">
+  <div class="compare-side" id="git-side">
+    <div class="compare-icon">&#10003;</div>
+    <div>
+      <div class="compare-tool">git</div>
+      <div class="compare-result">0 conflicts</div>
+    </div>
+  </div>
+  <div class="compare-side" id="ab-side">
+    <div class="compare-icon" id="ab-icon">&#10003;</div>
+    <div>
+      <div class="compare-tool">agent bobs</div>
+      <div class="compare-result" id="ab-result">0 collisions</div>
+    </div>
+  </div>
+</div>
+
+<!-- Waiting state -->
+<div id="waiting">
+  <div class="radar-wrap">
+    <div class="radar-ring"></div>
+    <div class="radar-ring-inner"></div>
+    <div class="radar-sweep"></div>
+    <div class="radar-center"></div>
+  </div>
+  <div id="waiting-text">Waiting for Bob sessions&hellip;</div>
+</div>
+
+<!-- Board + SVG overlay -->
+<div id="board-wrap">
+  <svg id="connector-svg" aria-hidden="true"></svg>
+  <div id="board"></div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+function makeSection(label, items, suffix) {
+  if (!items || items.length === 0) return null;
+  var sec = document.createElement('div');
+  var lbl = document.createElement('div');
+  lbl.className = 'section-label';
+  lbl.textContent = label;
+  sec.appendChild(lbl);
+  var list = document.createElement('div');
+  list.className = 'tag-list';
+  items.forEach(function(v) {
+    var rawVal = v + (suffix || '');
+    var tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.textContent = rawVal;
+    // store canonical key (strip "()" for matching)
+    tag.dataset.tagKey = v;
+    list.appendChild(tag);
+  });
+  sec.appendChild(list);
+  return sec;
+}
+
+// ── Connector lines ───────────────────────────────────────────────────────
+
+function drawConnectors(sessionPairs) {
+  var svg = document.getElementById('connector-svg');
+  svg.innerHTML = '';
+  if (!sessionPairs || sessionPairs.length === 0) return;
+
+  var wrap = document.getElementById('board-wrap');
+  var wrapRect = wrap.getBoundingClientRect();
+
+  sessionPairs.forEach(function(pair) {
+    var colA = document.querySelector('[data-session="' + pair[0] + '"]');
+    var colB = document.querySelector('[data-session="' + pair[1] + '"]');
+    if (!colA || !colB) return;
+
+    var rA = colA.getBoundingClientRect();
+    var rB = colB.getBoundingClientRect();
+
+    // Connect right-mid of left card to left-mid of right card (or vice-versa)
+    var ax, ay, bx, by;
+    if (rA.left < rB.left) {
+      ax = rA.right  - wrapRect.left;  ay = rA.top + rA.height / 2 - wrapRect.top;
+      bx = rB.left   - wrapRect.left;  by = rB.top + rB.height / 2 - wrapRect.top;
+    } else {
+      ax = rA.left   - wrapRect.left;  ay = rA.top + rA.height / 2 - wrapRect.top;
+      bx = rB.right  - wrapRect.left;  by = rB.top + rB.height / 2 - wrapRect.top;
+    }
+
+    var cx1 = ax + (bx - ax) * 0.45;
+    var cx2 = bx - (bx - ax) * 0.45;
+
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('class', 'conflict-line');
+    path.setAttribute('d',
+      'M ' + ax + ' ' + ay +
+      ' C ' + cx1 + ' ' + ay + ', ' + cx2 + ' ' + by + ', ' + bx + ' ' + by
+    );
+    svg.appendChild(path);
+  });
+}
+
+// ── render(sessions) ─────────────────────────────────────────────────────
+
+var _lastSessions = null;
+
+function render(sessions) {
+  _lastSessions = sessions;
+
+  var board    = document.getElementById('board');
+  var waiting  = document.getElementById('waiting');
+  var abSide   = document.getElementById('ab-side');
+  var abIcon   = document.getElementById('ab-icon');
+  var abResult = document.getElementById('ab-result');
+
+  board.innerHTML = '';
+  board.classList.remove('dimmed');
+  drawConnectors([]);
+
+  if (!sessions || sessions.length === 0) {
+    waiting.classList.add('visible');
+    abSide.classList.remove('alert');
+    abIcon.textContent = '\u2713';
+    abResult.textContent = '0 collisions';
+    return;
+  }
+  waiting.classList.remove('visible');
+
+  var collisions = sessions.filter(function(s) { return s.conflict != null; }).length;
+  if (collisions > 0) {
+    abSide.classList.add('alert');
+    abIcon.textContent = '\u26A0';
+    abResult.textContent = collisions + (collisions === 1 ? ' collision' : ' collisions');
+  } else {
+    abSide.classList.remove('alert');
+    abIcon.textContent = '\u2713';
+    abResult.textContent = '0 collisions';
+  }
+
+  sessions.forEach(function(s) {
+    var hasConflict = s.conflict != null;
+    var isBlocked   = s.status === 'blocked';
+
+    var col = document.createElement('div');
+    col.className = 'col ' +
+      (hasConflict ? 'blocked' : 'working') +
+      (hasConflict && !isBlocked ? ' conflicted' : '') +
+      (!hasConflict ? ' clean' : '');
+    col.dataset.session = s.session;
+
+    // Header
+    var hdr = document.createElement('div');
+    hdr.className = 'col-header';
+    var dot = document.createElement('div');
+    dot.className = 'dot';
+    var nameEl = document.createElement('div');
+    nameEl.className = 'session-name';
+    nameEl.textContent = s.session;
+    hdr.appendChild(dot);
+    hdr.appendChild(nameEl);
+    col.appendChild(hdr);
+
+    // Status badge
+    var badge = document.createElement('div');
+    badge.className = 'status-badge';
+    badge.textContent = s.status;
+    col.appendChild(badge);
+
+    // Sections
+    var filesEl = makeSection('Files', s.files, '');
+    if (filesEl) col.appendChild(filesEl);
+
+    var symEl = makeSection('Changing', s.symbols, '()');
+    if (symEl) col.appendChild(symEl);
+
+    var callsEl = makeSection('Calling', s.calls, '()');
+    if (callsEl) col.appendChild(callsEl);
+
+    // Conflict box
+    if (s.conflict) {
+      var box = document.createElement('div');
+      box.className = 'conflict-box';
+
+      var clbl = document.createElement('div');
+      clbl.className = 'conflict-label';
+      clbl.textContent = '\u26A0  Conflict';
+      box.appendChild(clbl);
+
+      var cwith = document.createElement('div');
+      cwith.className = 'conflict-with';
+      cwith.textContent = 'with ' + s.conflict.with;
+      // click → scroll to & flash target column
+      (function(targetName) {
+        cwith.addEventListener('click', function() {
+          var target = document.querySelector('[data-session="' + targetName + '"]');
+          if (!target) return;
+          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          target.classList.remove('flash');
+          void target.offsetWidth; // reflow to restart animation
+          target.classList.add('flash');
+          setTimeout(function() { target.classList.remove('flash'); }, 950);
+        });
+      })(s.conflict.with);
+      box.appendChild(cwith);
+
+      var creason = document.createElement('div');
+      creason.className = 'conflict-reason';
+      creason.textContent = s.conflict.reason;
+      box.appendChild(creason);
+
+      var ctype = document.createElement('div');
+      ctype.className = 'conflict-type';
+      ctype.textContent = (s.conflict.type || '').replace('_', ' ');
+      box.appendChild(ctype);
+
+      col.appendChild(box);
+    }
+
+    board.appendChild(col);
+  });
+
+  // Wire tag hover cross-highlight
+  wireTagHighlight();
+
+  // Draw connector lines after DOM settles
+  requestAnimationFrame(function() {
+    var pairs = [];
+    var seen  = {};
+    sessions.forEach(function(s) {
+      if (!s.conflict) return;
+      var key = [s.session, s.conflict.with].sort().join('|');
+      if (!seen[key]) {
+        seen[key] = true;
+        pairs.push([s.session, s.conflict.with]);
+      }
+    });
+    drawConnectors(pairs);
+  });
+}
+
+// ── Tag cross-highlight ───────────────────────────────────────────────────
+
+function wireTagHighlight() {
+  var allTags = document.querySelectorAll('.tag');
+
+  allTags.forEach(function(tag) {
+    tag.addEventListener('mouseenter', function() {
+      var key = tag.dataset.tagKey;
+      if (!key) return;
+      allTags.forEach(function(t) {
+        if (t.dataset.tagKey === key) t.classList.add('highlighted');
+      });
+    });
+    tag.addEventListener('mouseleave', function() {
+      allTags.forEach(function(t) { t.classList.remove('highlighted'); });
+    });
+  });
+}
+
+// ── Recompute connector positions on resize ───────────────────────────────
+window.addEventListener('resize', function() {
+  if (!_lastSessions) return;
+  var pairs = [];
+  var seen  = {};
+  _lastSessions.forEach(function(s) {
+    if (!s.conflict) return;
+    var key = [s.session, s.conflict.with].sort().join('|');
+    if (!seen[key]) { seen[key] = true; pairs.push([s.session, s.conflict.with]); }
+  });
+  drawConnectors(pairs);
+});
+
+// ── WebSocket + reconnect ─────────────────────────────────────────────────
+
+var FAKE_DATA = [
+  {
+    session:  'aig',
+    files:    ['auth/user.py'],
+    symbols:  ['get_user'],
+    calls:    [],
+    status:   'working',
+    conflict: { with: 'jay', reason: 'aig is renaming get_user, which jay calls', type: 'same_function' }
+  },
+  {
+    session:  'jay',
+    files:    ['auth/reset.py'],
+    symbols:  [],
+    calls:    ['get_user'],
+    status:   'blocked',
+    conflict: { with: 'aig', reason: 'aig is renaming get_user, which jay calls', type: 'same_function' }
+  },
+  {
+    session:  'kim',
+    files:    ['tests/test_user.py'],
+    symbols:  [],
+    calls:    [],
+    status:   'working',
+    conflict: null
+  }
+];
+
+var WS_URL     = 'ws://127.0.0.1:8765/ws';
+var RETRY_MS   = 3000;
+// First attempt gets a tighter timeout so fallback to fake data is fast
+var FIRST_TIMEOUT_MS = 1200;
+var ws         = null;
+var retryTimer = null;
+var firstTimer = null;
+var everLive   = false;
+var lastReal   = null;
+
+function setConnected(state) {
+  var badge  = document.getElementById('conn-badge');
+  var text   = document.getElementById('conn-text');
+  var banner = document.getElementById('disc-banner');
+  badge.className = state;
+  if (state === 'live') {
+    text.textContent = 'live';
+    banner.classList.remove('visible');
+  } else if (state === 'disconnected') {
+    text.textContent = 'reconnecting';
+    banner.classList.add('visible');
+  } else if (state === 'connecting') {
+    text.textContent = 'connecting';
+    banner.classList.remove('visible');
+  } else {
+    text.textContent = 'offline';
+    banner.classList.remove('visible');
+  }
+}
+
+function connect() {
+  if (ws) {
+    ws.onopen = ws.onmessage = ws.onerror = ws.onclose = null;
+    try { ws.close(); } catch(e) {}
+    ws = null;
+  }
+  clearTimeout(firstTimer);
+
+  setConnected(everLive ? 'disconnected' : 'connecting');
+
+  try {
+    ws = new WebSocket(WS_URL);
+  } catch(e) {
+    onFailed();
+    return;
+  }
+
+  // If first connect doesn't open quickly, fall back to fake data
+  if (!everLive) {
+    firstTimer = setTimeout(function() {
+      if (!everLive) {
+        setConnected('offline');
+        render(FAKE_DATA);
+      }
+    }, FIRST_TIMEOUT_MS);
+  }
+
+  ws.onopen = function() {
+    clearTimeout(firstTimer);
+    everLive = true;
+    setConnected('live');
+    clearTimeout(retryTimer);
+  };
+
+  ws.onmessage = function(evt) {
+    try {
+      var data = JSON.parse(evt.data);
+      if (Array.isArray(data)) { lastReal = data; render(data); }
+    } catch(e) {}
+  };
+
+  ws.onerror = function() {};
+
+  ws.onclose = function() {
+    clearTimeout(firstTimer);
+    if (everLive) {
+      setConnected('disconnected');
+      if (lastReal !== null) {
+        render(lastReal);
+        document.getElementById('board').classList.add('dimmed');
+      }
+    } else {
+      setConnected('offline');
+      render(FAKE_DATA);
+    }
+    scheduleRetry();
+  };
+}
+
+function onFailed() {
+  if (everLive) {
+    setConnected('disconnected');
+    if (lastReal !== null) {
+      render(lastReal);
+      document.getElementById('board').classList.add('dimmed');
+    }
+  } else {
+    setConnected('offline');
+    render(FAKE_DATA);
+  }
+  scheduleRetry();
+}
+
+function scheduleRetry() {
+  clearTimeout(retryTimer);
+  retryTimer = setTimeout(connect, RETRY_MS);
+}
+
+// Start in "connecting" state, attempt the server immediately
+connect();
+</script>
+</body>
+</html>
