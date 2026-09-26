@@ -67,6 +67,31 @@ the page in the group chat.
 
 ## Person 3 — Bob integration (Alfonso)
 
+**Built:** the Bob integration in `demo/.bob/` — the MCP connection, the three
+hooks, the Agent Bobs mode and its rules. Running the hooks against the real
+server found two problems, so it isn't demo-ready yet.
+
+**Next — prove it in a real Bob, and fix what that shows:**
+
+1. **Claim only for tools that change files.** Today the hook claims every tool
+   that carries a path, so a Bob that only *reads* or *lists* a file gets
+   blocked, and every dashboard column turns red. The fix needs the exact names
+   of Bob's file-editing tools — question 1 of the first task below.
+2. **Find out when the Stop hook fires** — question 4 below. If it fires whenever
+   Bob pauses, for example right after telling the user about a conflict, remove
+   it from `settings.json` and let the mode's `release` call do the job.
+   Otherwise a blocked Bob vanishes from the dashboard the moment it's caught.
+3. **Let Bob explain a blocked write.** The hook's message goes to Bob's log, not
+   to Bob. Add a rule: if a write is blocked, call `check` on that file, then
+   tell the user who holds it and why.
+4. **Confirm in Bob** that the Agent Bobs mode appears in the mode list, the MCP
+   tab shows `agent-bobs` connected with 3 tools, and Bob knows its session name.
+5. **Replace the screenshot** `bob_sessions/image_alfonsovsebolino_sessionlog.png`
+   with the Task summary panel, named
+   `imagic_alfonsovsebolino_task01_bob_integration_summary.png`.
+
+### The first task — the hook experiment
+
 You make Bob check with our server before it edits anything. Your first job is
 the biggest unknown in the project: **proving Bob's hooks behave the way its docs
 say.** You don't need the server for this.

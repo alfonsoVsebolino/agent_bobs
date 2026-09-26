@@ -34,7 +34,8 @@ Built by team **iMAGIC** for the IBM Bob 2.0 Hackathon, 25–27 September 2026.
 
 - ✅ Server — collision rules, MCP tools for Bob, `/api` for the hooks, `/ws` for
   the dashboard; 13 passing tests
-- 🔨 Dashboard, Bob integration and demo app — under way
+- 🔨 Bob integration — built in `demo/.bob/`; being proven in a real Bob
+- 🔨 Dashboard and demo app — under way
 
 ## Run the server
 
