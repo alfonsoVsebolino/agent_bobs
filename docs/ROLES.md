@@ -97,6 +97,16 @@ the page in the group chat.
 hooks, the Agent Bobs mode and its rules. Running the hooks against the real
 server found two problems, so it isn't demo-ready yet.
 
+**Update — branch `alfonso` (Sat 23:13), tested against the real server:** reads
+are no longer claimed. But the hook now looks for the tool name in a field called
+`tool_name`, while Bob's lifecycle-hooks docs call it `tool`. With Bob's
+documented format, a write to another Bob's file is **not blocked**. Nobody has
+seen a real Bob event yet, so: read `tool` first, falling back to `tool_name`;
+also treat any tool whose name contains write, edit, replace, insert, diff,
+create, delete, apply, patch, rename or move as a write; then confirm with a real
+`hooklog.jsonl`. Before merging to main, remove the new root-level `.bob/`,
+which turns the logging hooks on for everyone who opens the repo in Bob.
+
 **Next — prove it in a real Bob, and fix what that shows:**
 
 1. **Claim only for tools that change files.** Today the hook claims every tool
