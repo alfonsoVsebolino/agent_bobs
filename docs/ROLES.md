@@ -24,9 +24,12 @@ a push is rejected, ask Alfonso to add you as a collaborator on the repo.
 `/api` routes for the hooks, and the `/ws` websocket for the dashboard — with 13
 passing tests. How to run it is in the README.
 
-**Next:** the demo harness in `harness/`. One script builds the three demo copies,
-with or without Agent Bobs; another merges their work and runs the tests, for
-the control run.
+**Also done:** the demo harness in `harness/`. `setup_demo.py` builds the three
+demo copies, with or without Agent Bobs; `merge_demo.py` merges their work, runs
+the tests and prints the dashboard link. See "Run the demo" in the README.
+
+**Next:** the first real control run — three Bobs in copies without Agent Bobs,
+then the merge — to measure the numbers for the pitch.
 
 ---
 
@@ -50,10 +53,7 @@ against the real server with the three-Bob demo.
    control run — and show "—" when it isn't given.
 4. **Optional:** a Bob that holds a function but isn't blocked gets a red badge
    too, so viewers can't tell who is blocked. Make the holder's badge neutral.
-5. **Rename your Bob screenshot.** `bob_sessions/Screenshot 2026-09-26 230001.png`
-   is the right panel with the wrong name. Retake it as a tight crop of just the
-   Task panel, named `imagic_<your-lablab-username>_task01_dashboard_summary.png`,
-   and delete the old file.
+5. ~~Rename your Bob screenshot~~ — done.
 
 ### The first task
 

@@ -39,7 +39,8 @@ Built by team **iMAGIC** for the IBM Bob 2.0 Hackathon, 25–27 September 2026.
 - 🔨 Bob integration — built in `demo/.bob/`; being proven in a real Bob
 - ✅ Demo app — 12 passing tests; a dry run of the control run gives 0 git
   conflicts and failing tests, as the pitch says
-- 🔨 Demo harness — builds the three demo copies and runs the control run
+- ✅ Demo harness — builds the three demo copies, merges their work and runs the
+  tests; tested on Windows, including rebuilds and a conflict case
 
 ## Run the server
 
