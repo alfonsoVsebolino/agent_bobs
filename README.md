@@ -79,6 +79,41 @@ Invoke-RestMethod -Method Post "$api/release" -ContentType application/json -Bod
 
 Restart the server for a clean slate.
 
+## Run the demo
+
+The harness builds the three-session workspace, applies the demo edits, merges,
+and runs the tests — all from the repo root.
+
+**One-time setup** (no extra packages needed — stdlib only):
+
+    py harness\setup_demo.py
+
+This creates `%USERPROFILE%\agent-bobs-demo` with a `base/` git repo and three
+clones (`demo-aig`, `demo-jay`, `demo-kim`), each pre-loaded with `.bob/`.
+
+**Control run** (no Agent Bobs — shows the raw git + test failure):
+
+    py harness\setup_demo.py --without-agent-bobs --fresh
+
+**Open each session** in its own Bob window using the *Agent Bobs* mode:
+
+    %USERPROFILE%\agent-bobs-demo\demo-aig
+    %USERPROFILE%\agent-bobs-demo\demo-jay
+    %USERPROFILE%\agent-bobs-demo\demo-kim
+
+**After all three Bobs finish**, merge and run tests:
+
+    py harness\merge_demo.py
+
+This commits each session's work, merges them, runs `python -m unittest`, and
+prints the `file:///…/dashboard/index.html?git=<N>` link.
+
+**Run the harness self-test** (no Bob needed — exercises setup + merge end-to-end):
+
+    py harness\test_harness.py
+
+Exits 0 on success, non-zero on any failure.
+
 ## Run the tests
 
     .venv\Scripts\python -m server.test_core
