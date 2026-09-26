@@ -7,9 +7,9 @@ summaries in `bob_sessions/` — see [`bob_sessions/README.md`](../bob_sessions/
 | Role | Who | Owns |
 |---|---|---|
 | Person 1 — Server | Marco (MarcoAndreiBelen) | `server/` |
-| Person 2 — Dashboard | _(name)_ | `dashboard/` |
-| Person 3 — Bob integration | _(name)_ | `demo/.bob/` and the hooks |
-| Person 4 — Demo and submission | _(name)_ | `demo/`, the video, README, writeup, submission |
+| Person 2 — Dashboard | Gabriel | `dashboard/` |
+| Person 3 — Bob integration | Alfonso | `demo/.bob/` and the hooks |
+| Person 4 — Demo and submission | Abrahm | `demo/`, the video, README, writeup, submission |
 
 **How we work:** pull before you start. Commit only your own folder plus your
 screenshots, so we never edit the same files. Push every 2–3 hours, check in every
@@ -18,7 +18,7 @@ a push is rejected, ask Alfonso to add you as a collaborator on the repo.
 
 ---
 
-## Person 1 — Server
+## Person 1 — Server (Marco)
 
 **Done:** the server core — claim and release, and the collision rules — with 8
 passing tests, including the three-Bob demo scenario.
@@ -32,7 +32,7 @@ with Person 3.
 
 ---
 
-## Person 2 — Dashboard
+## Person 2 — Dashboard (Gabriel)
 
 You build the live screen the judges watch during the demo. You don't need the
 server to start: build it with fake data now and connect it later.
@@ -68,7 +68,7 @@ the page in the group chat.
 
 ---
 
-## Person 3 — Bob integration
+## Person 3 — Bob integration (Alfonso)
 
 You make Bob check with our server before it edits anything. Your first job is
 the biggest unknown in the project: **proving Bob's hooks behave the way its docs
@@ -123,7 +123,7 @@ the Bob window.
 
 ---
 
-## Person 4 — Demo and submission
+## Person 4 — Demo and submission (Abrahm)
 
 You own the sample app we break on purpose, and later the video and the writeup.
 The demo app comes first, and it doesn't need the server.
