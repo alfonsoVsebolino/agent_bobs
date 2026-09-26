@@ -12,9 +12,16 @@ These rules apply whenever you are in the **Agent Bobs** mode.
      parameters or behaviour, change return type). If a changed signature breaks
      callers, it must be listed here.
    - `calls` — every function you will call but not change.
-3. If `claim` returns `{"clear": false, ...}`:
+3. If `claim` returns `{"clear": false, ...}`, or if a file write is blocked by
+   the `PreToolUse` hook (you will see a hook error rather than a tool result):
    - **STOP. Do not edit anything.**
-   - Tell the user exactly what the conflict is and which other session holds it.
+   - Call the `check` MCP tool with the same file (and any symbols/calls you
+     planned) to get the current conflict detail from the server.
+   - Tell the user: which file or function is held, which session holds it, and
+     the reason string from the conflict. Example:
+     > "hello.py is held by session 'alf'. Reason: alf is editing hello.py."
+   - The hook's own error message goes to Bob's internal log, not to you — you
+     must call `check` yourself to get the information to relay to the user.
    - Wait for the user to decide what to do next.
 4. If `claim` returns `{"clear": true, ...}`, proceed with the edit.
 
