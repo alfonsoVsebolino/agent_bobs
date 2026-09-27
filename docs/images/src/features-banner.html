@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100vw;height:100vh;overflow:hidden}
+body{font-family:Poppins,'Segoe UI',sans-serif;color:#eef0f6;
+ background:radial-gradient(ellipse at 88% 110%,#4a1218 0%,rgba(74,18,24,0) 55%),radial-gradient(ellipse at 0% 0%,#101a2e 0%,rgba(16,26,46,0) 50%),#0a0c14;
+ padding:40px 44px;display:flex;flex-direction:column;gap:3.4vh}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+h1{font-size:min(10.5vh,5.25vw);font-weight:800;letter-spacing:-1.5px;line-height:1}
+.tag{margin-top:1.6vh;font-size:min(3.4vh,1.7vw);color:#b9bfd0;font-weight:400}
+.who{font-size:min(2.4vh,1.2vw);font-weight:600;color:#ff6b6b;border:1px solid rgba(255,107,107,.45);background:rgba(255,92,87,.08);
+ padding:8px 14px;border-radius:999px;white-space:nowrap;margin-bottom:6px}
+.grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:16px;min-height:0}
+.card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:2.8vh 2.2vw;
+ display:flex;flex-direction:column;justify-content:center;gap:1.4vh;min-height:0}
+.card .t{display:flex;align-items:center;gap:1.6vh;font-size:min(3.6vh,1.8vw);font-weight:700}
+.card .i{font-size:min(4.2vh,2.1vw);line-height:1}
+.card p{font-size:min(2.65vh,1.32vw);line-height:1.5;color:#aeb4c6}
+.card code{font-family:'JetBrains Mono',Consolas,monospace;font-size:min(2.3vh,1.15vw);color:#e8eaf0;background:rgba(255,255,255,.07);padding:1px 6px;border-radius:5px}
+.hl{background:linear-gradient(135deg,rgba(255,92,87,.14),rgba(61,220,132,.10));border-color:rgba(255,255,255,.16)}
+.res{display:flex;align-items:center;gap:1.8vh;font-size:min(6vh,3vw);font-weight:800;margin-top:2px}
+.bad{color:#ff5c57}.ok{color:#3ddc84}.arrow{color:#6b7288;font-weight:600}
+.small{font-size:min(2.3vh,1.15vw)!important;color:#8e95a9!important}
+</style></head><body>
+<div class="head">
+ <div><h1>Agent Bobs</h1><div class="tag">When one Bob isn't alone — stop an AI agent before it breaks another's work.</div></div>
+ <div class="who">Built with &amp; for IBM Bob · team iMAGIC</div>
+</div>
+<div class="grid">
+ <div class="card"><div class="t"><span class="i">📝</span>Plans before code</div>
+  <p>Each Bob declares the files it will edit and the functions it will change or call — before writing a line.</p></div>
+ <div class="card"><div class="t"><span class="i">🔀</span>Catches what Git can't</div>
+  <p>A rename in one file, new callers in others: Git sees <b>0 conflicts</b>. Agent Bobs sees the collision.</p></div>
+ <div class="card"><div class="t"><span class="i">🛑</span>Blocks the write</div>
+  <p>Bob's <code>PreToolUse</code> hook checks every file write and refuses it when another Bob holds the file.</p></div>
+ <div class="card"><div class="t"><span class="i">📡</span>Live dashboard</div>
+  <p>Every Bob's plan and every collision, the moment it happens — and why.</p></div>
+ <div class="card"><div class="t"><span class="i">🧩</span>Bob-native</div>
+  <p>A custom Bob mode, an MCP server, lifecycle hooks and <code>AGENTS.md</code>, working together.</p></div>
+ <div class="card hl"><div class="t"><span class="i">✅</span>Measured, not claimed</div>
+  <p class="small">Same 3 tasks · 3 real Bobs · tests after the merge</p>
+  <div class="res"><span class="bad">FAILED</span><span class="arrow">→</span><span class="ok">OK</span></div></div>
+</div>
+</body></html>
