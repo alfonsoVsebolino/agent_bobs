@@ -1,3 +1,5 @@
+<img src="docs/images/logo.png" alt="Agent Bobs logo: three agents joined around an eye" width="110">
+
 # Agent Bobs
 
 **When one Bob isn't alone.** When several developers run IBM Bob on the same
