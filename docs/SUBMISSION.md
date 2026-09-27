@@ -15,6 +15,9 @@ connections are slow.
 | **IBM Bob Usage Statement** | **500 words or less**: how and where the team used IBM Bob, specifically, throughout development. | Abrahm, from everyone's notes |
 | **Public repo + Bob screenshots** | A public link to the repo. **Each team member's** Bob task session summary screenshots in the repo — our `bob_sessions/`. No IBM Cloud credentials anywhere in the repo. | everyone |
 
+**Drafts to start from:** [`docs/drafts/long-description.md`](drafts/long-description.md)
+(474 words) and [`docs/drafts/bob-usage-statement.md`](drafts/bob-usage-statement.md) (402 words).
+
 For the Bob Usage Statement, each person sends Abrahm two or three sentences on
 how they used Bob. Describe each piece by what actually built it: the statement
 can be checked against the task summaries in `bob_sessions/`.
