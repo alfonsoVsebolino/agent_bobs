@@ -46,7 +46,51 @@ of two, and led to fixing the demo app.
 
 ## Agent Bobs run — the same three tasks, with Agent Bobs
 
-To do. Same harness (`setup_demo.py` without `--without-agent-bobs`), the same
-three prompts, the server and the dashboard running. Record: when each collision
-appeared on the dashboard, whether any Bob wrote code against the renamed
-function, and what the merge reports.
+Sunday 27 September, the same laptop. Built with `harness/setup_demo.py` (every
+copy gets the Agent Bobs mode, MCP connection and hooks), with the server and
+the dashboard running. The same three tasks, sent in the Agent Bobs mode. aig
+went first, so its rename was already under way when the others started — the
+situation the product is for.
+
+The real timeline, from the hook logs:
+
+```
+10:52:43  aig  CLAIM    renaming get_user
+10:52:56  aig  done     renamed in 3 files — its claim stays until merge
+10:53:38  jay  CLAIM    calls get_user  →  BLOCKED: "aig is renaming get_user, which jay calls"
+10:53:41  kim  CLAIM    calls get_user  →  BLOCKED: "aig is renaming get_user, which kim calls"
+```
+
+- **Both collisions were caught at the claim, before jay or kim wrote a single
+  line.** Each Bob stopped and told its developer who holds `get_user` and why.
+- The dashboard showed **2 collisions**, with jay and kim blocked.
+- The merge afterwards: **0 conflicted files, and the merged tests pass**
+  (12 tests, OK) — nobody built on the old name.
+- **Cost:** 0.51 Bobcoins for all three Bobs.
+
+Evidence: `bob_sessions/…task16`–`task18_agentbobs_run2_*_summary.png`, and the
+screen recording used in the video.
+
+### The same three tasks, side by side
+
+| | Without Agent Bobs | With Agent Bobs |
+|---|---|---|
+| What jay and kim did | wrote 84 lines calling a function that no longer existed | wrote nothing — stopped at the claim |
+| When the problem surfaced | at merge, when the tests failed | the moment each Bob declared its plan |
+| What git reported | 0 conflicts | 0 conflicts |
+| Merged tests | **FAILED** (errors=2) | **OK** |
+
+### The first Agent Bobs run caught nothing — and why
+
+An earlier run (10:21, `task12`–`task14`) caught no collision. The hook logs
+showed two real problems, both fixed in `d29940c`:
+
+1. **Claims were released too early.** Each Bob released its claims when its own
+   task ended. aig released at 10:22:15; jay started at 10:22:17. But aig's
+   rename only exists in aig's copy until it is merged, so jay's and kim's code
+   would still break at merge. **A claim now lasts until the work is merged.**
+2. **Names didn't match.** jay declared its call as `auth.user.get_user`, while
+   aig claimed `get_user`. **The server now compares bare names.**
+
+The same logs showed that Bob's real hook events use the fields `tool_name` and
+`tool_input`, not the `tool` and `input` shown in Bob's documentation.

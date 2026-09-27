@@ -154,7 +154,14 @@ task is genuinely complete or abandoned. In a two-session blocking test:
 | Keep `Stop` hook | Sessions auto-release on every pause. Stale claims are impossible but mid-task blocking evaporates the moment Bob asks a question. |
 | Remove `Stop` hook | Sessions stay alive across pauses, blocking is durable. Stale claims are possible if a Bob window is closed without calling `release`. |
 
-**Decision.** The `Stop` hook is **retained in the repo** (`demo/.bob/settings.json`)
+> **Superseded, Sunday 09:30.** The `Stop` hook was removed from
+> `demo/.bob/settings.json` altogether, rather than removed by hand from each demo
+> copy: the harness copies `demo/.bob` into every run, so a manual step would be
+> forgotten. Later live runs also showed that claims must last until the work is
+> **merged** — see `docs/RESULTS.md`. The original decision is kept below for the
+> record.
+
+**Original decision.** The `Stop` hook is **retained in the repo** (`demo/.bob/settings.json`)
 because removing it would silently break stale-claim cleanup and we do not have
 a reliable way to distinguish "turn complete, waiting for input" from "task
 abandoned." For the live demo, operators must manually remove the `Stop` entry
@@ -199,19 +206,20 @@ is unchanged.
 
 ## Still unverified — check before relying on it
 
-- **Judging criteria.** v1 says "meaningful use of IBM Bob, originality,
-  demonstrated impact." That is not in the official guide or the kickoff email.
-  Plausible, unconfirmed.
-- **Deadline.** Sun 27 Sep 23:00 PHT (15:00 UTC) comes from another team's repo,
-  not an official source. Confirm on the submission form.
-- ~~**Hooks and MCP behave as documented**~~ — **verified**. `PreToolUse` blocks
-  writes, `SessionStart` injects session name, `Stop` fires on every turn
-  boundary (see ADR-4a).
-- ~~**The exact names of Bob's file-editing tools**~~ — **verified via
-  `hooklog.jsonl` probe**. Writing tools observed: `write_file`,
-  `str_replace_based_edit_tool`, `create_file`, `apply_diff`, `insert_content`,
-  `search_and_replace`. Full list is the `WRITE_TOOLS` set in
-  `demo/.bob/hooks/claim_hook.py`.
+- ~~Judging criteria and deadline~~ — **confirmed** on the lablab event page; see
+  `docs/SUBMISSION.md`. The real criteria differ from v1: Application of
+  Technology, Presentation, Business Value and Originality.
+- ~~**Hooks and MCP behave as documented**~~ — **verified in live runs, with one
+  difference from the docs.** `PreToolUse` and `SessionStart` work as documented,
+  and `Stop` fires on every pause (ADR-4a). But the event Bob actually sends names
+  its fields `hook_event_name`, `tool_name` and `tool_input`, where the docs show
+  `event`, `tool` and `input`. `claim_hook.py` reads both.
+- ~~**The exact names of Bob's file-editing tools**~~ — **seen in the live runs'
+  hook logs:** `write_file` and `apply_diff` for writes; `read_file`,
+  `list_files`, `grep` and `FindSymbol` for reads; MCP tools arrive as
+  `mcp__agent-bobs__claim` and `mcp__agent-bobs__release`. `claim_hook.py` also
+  treats any tool whose name contains write, edit, replace, insert, diff, create
+  or delete as a write, so an unseen name is still caught.
 - **Whether hooks also fire for subagent tool calls.** If they do, Agent Bobs
   protects Bob's own parallel subagents from each other at no extra cost. Worth
   one question, not one line of code.
