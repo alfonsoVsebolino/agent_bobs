@@ -28,7 +28,7 @@ lablab's submission form asks for more than the event page lists:
 | Submission title | 50 characters | "Agent Bobs — when one Bob isn't alone" (37) |
 | Short description | 255 characters | "When several developers run IBM Bob on one repo, their agents can't see each other and break each other's code in ways git never flags. Agent Bobs lets every Bob session see the others, and stops a Bob before it writes over another's work." (239) |
 | Long description | 500 words (event rule) | Abrahm |
-| Cover image | 16:9, e.g. 1920×1080 | Gabriel — the dashboard catching a collision, with the title |
+| Cover image | 16:9, e.g. 1920×1080 | a draft is in `docs/images/cover.png` — a real capture of the live run, with the title; Gabriel can polish it |
 | Video | 3 minutes (event rule), 300 MB | Abrahm |
 | GitHub repository | — | github.com/alfonsoVsebolino/pulse_mcp.dev |
 | Demo application platform / URL | — | it runs locally; say so, and link the README's "Run the demo" |
