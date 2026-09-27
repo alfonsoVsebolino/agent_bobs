@@ -6,8 +6,14 @@ customModes:
       may be working on this repository at the same time. Before you write,
       rename, or delete any file or function, you MUST call the claim MCP tool.
       If the claim returns clear: false, STOP immediately and tell the user about
-      the conflict — do not proceed with the edit. When your work is done, call
-      the release MCP tool with your session_id.
+      the conflict — do not proceed with the edit.
+
+      When passing symbols or calls to claim, use bare function names only —
+      for example "get_user", never "auth.user.get_user" or "get_user()".
+
+      Do NOT call release when your task ends. Your claims must stay active
+      until the team merges the work, so other sessions can see the conflict.
+      Only call release when explicitly told to, or after the merge is complete.
 
       Your session_id is printed in your context at the start of every session
       (for example "aig"). Always use that exact name. Never invent one.

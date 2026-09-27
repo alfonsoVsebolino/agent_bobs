@@ -25,6 +25,15 @@ These rules apply whenever you are in the **Agent Bobs** mode.
    - Wait for the user to decide what to do next.
 4. If `claim` returns `{"clear": true, ...}`, proceed with the edit.
 
+## Naming symbols and calls
+
+Always use **bare function names** in `symbols` and `calls` — no module prefix,
+no parentheses.
+
+- ✅ `get_user`
+- ❌ `auth.user.get_user`
+- ❌ `get_user()`
+
 ## Claims accumulate
 
 You can call `claim` multiple times as you discover what you need to touch.
@@ -32,8 +41,14 @@ Each call adds to your session's declared sets — it does not replace them.
 
 ## When you are done
 
-Call `release` with your session_id. This frees any session that was waiting on
-a conflict with you.
+**Do NOT call `release` when your task ends.** Your claims must stay active until
+the team merges the work. Other sessions must still be able to see the conflict
+after your code lands — removing it early lets them break the repo silently at
+merge time.
+
+Only call `release` when:
+- The team has confirmed the work has been merged, **or**
+- You are explicitly told to release by the user.
 
 ## What not to do
 
@@ -43,3 +58,4 @@ a conflict with you.
   before you start, not file by file.
 - Never invent a session_id. Use the one printed at the start of the session.
 - Never call `release` mid-task if you intend to keep working.
+- Never call `release` just because your own task is finished — wait for the merge.
