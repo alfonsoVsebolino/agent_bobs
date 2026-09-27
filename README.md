@@ -1,4 +1,4 @@
-<img src="docs/images/logo.png" alt="Agent Bobs logo: three agents joined around an eye" width="110">
+<img src="docs/images/logo.png" alt="Agent Bobs logo: three agents joined around an eye" width="120">
 
 # Agent Bobs
 
