@@ -104,9 +104,13 @@ async def release(session_id: str) -> dict:
                  the session (for example "aig").  Always pass that same
                  name; never invent one.
 
-    Call this when your work is done (or abandoned).  After release, other
-    sessions that were blocked because of a conflict with this session will
-    automatically return to "working" status.
+    Call this ONLY when explicitly told to by the user, or after the work
+    has been merged into the shared branch.  Do NOT call release simply
+    because your own task is finished — your claims must remain active until
+    the merge so that other sessions can still detect the conflict.
+
+    After release, other sessions that were blocked because of a conflict
+    with this session will automatically return to "working" status.
 
     Returns {"ok": true}.
     """

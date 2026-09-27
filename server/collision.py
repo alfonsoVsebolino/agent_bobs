@@ -25,6 +25,36 @@ if TYPE_CHECKING:
     from .state import SessionRecord
 
 
+def normalise_name(name: str) -> str:
+    """Normalise a symbol or call name for conflict comparison.
+
+    Steps applied in order:
+      1. Strip leading/trailing whitespace.
+      2. Strip a trailing "()" (call-site decoration).
+      3. Lowercase.
+      4. Keep only the part after the last "." or "::" (strip module prefix).
+
+    Examples:
+      "auth.user.get_user()" → "get_user"
+      "auth::get_user"       → "get_user"
+      " Get_User "           → "get_user"
+    """
+    name = name.strip()
+    if name.endswith("()"):
+        name = name[:-2]
+    name = name.lower()
+    # strip module/namespace prefix — split on "::" first, then "."
+    if "::" in name:
+        name = name.rsplit("::", 1)[-1]
+    elif "." in name:
+        name = name.rsplit(".", 1)[-1]
+    return name
+
+
+def _norm_set(names: list[str]) -> set[str]:
+    return {normalise_name(n) for n in names}
+
+
 def detect(
     candidate_id: str,
     candidate_files: list[str],
@@ -39,8 +69,8 @@ def detect(
     same_file is checked first; same_function second.
     """
     norm_files   = {normalise_path(f) for f in candidate_files}
-    lower_syms   = {s.lower() for s in candidate_symbols}
-    lower_calls  = {c.lower() for c in candidate_calls}
+    lower_syms   = _norm_set(candidate_symbols)
+    lower_calls  = _norm_set(candidate_calls)
 
     for sid, rec in state.items():
         if sid == candidate_id:
@@ -62,8 +92,8 @@ def detect(
             }
 
         # --- same_function ---------------------------------------------------
-        other_syms  = {s.lower() for s in rec.symbols}
-        other_calls = {c.lower() for c in rec.calls}
+        other_syms  = _norm_set(rec.symbols)
+        other_calls = _norm_set(rec.calls)
 
         # candidate changes something the other session also changes
         sym_sym = lower_syms & other_syms

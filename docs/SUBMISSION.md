@@ -15,6 +15,9 @@ connections are slow.
 | **IBM Bob Usage Statement** | **500 words or less**: how and where the team used IBM Bob, specifically, throughout development. | Abrahm, from everyone's notes |
 | **Public repo + Bob screenshots** | A public link to the repo. **Each team member's** Bob task session summary screenshots in the repo — our `bob_sessions/`. No IBM Cloud credentials anywhere in the repo. | everyone |
 
+**Drafts to start from:** [`docs/drafts/long-description.md`](drafts/long-description.md)
+(474 words) and [`docs/drafts/bob-usage-statement.md`](drafts/bob-usage-statement.md) (402 words).
+
 For the Bob Usage Statement, each person sends Abrahm two or three sentences on
 how they used Bob. Describe each piece by what actually built it: the statement
 can be checked against the task summaries in `bob_sessions/`.
@@ -28,7 +31,7 @@ lablab's submission form asks for more than the event page lists:
 | Submission title | 50 characters | "Agent Bobs — when one Bob isn't alone" (37) |
 | Short description | 255 characters | "When several developers run IBM Bob on one repo, their agents can't see each other and break each other's code in ways git never flags. Agent Bobs lets every Bob session see the others, and stops a Bob before it writes over another's work." (239) |
 | Long description | 500 words (event rule) | Abrahm |
-| Cover image | 16:9, e.g. 1920×1080 | Gabriel — the dashboard catching a collision, with the title |
+| Cover image | 16:9, e.g. 1920×1080 | a draft is in `docs/images/cover.png` — a real capture of the live run, with the title; Gabriel can polish it |
 | Video | 3 minutes (event rule), 300 MB | Abrahm |
 | GitHub repository | — | github.com/alfonsoVsebolino/pulse_mcp.dev |
 | Demo application platform / URL | — | it runs locally; say so, and link the README's "Run the demo" |

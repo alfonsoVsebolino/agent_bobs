@@ -181,6 +181,20 @@ def test_three_session_aig_jay_kim():
             f"aig should still be working, got {STATE['aig'].status}")
 
 
+def test_symbol_name_normalisation():
+    """aig changes 'get_user', jay calls 'auth.user.get_user()' → same_function."""
+    from server.state import claim
+
+    r1 = claim("aig", [], ["get_user"], [])
+    _assert(r1["clear"] is True)
+
+    r2 = claim("jay", [], [], ["auth.user.get_user()"])
+    _assert(r2["clear"] is False,
+            "qualified call 'auth.user.get_user()' should conflict with symbol 'get_user'")
+    _assert(r2["conflict"]["type"] == "same_function")
+    _assert(r2["conflict"]["with"] == "aig")
+
+
 def test_path_normalisation_variants():
     """./auth/user.py, auth\\user.py and Auth/User.py all match auth/user.py."""
     from server.state import claim, STATE
@@ -211,6 +225,7 @@ TESTS = [
     ("release(blocker) clears blocked session", test_release_clears_conflict_on_both_sessions_releaser_is_blocker),
     ("release(blocked) clears blocker session", test_release_clears_conflict_on_both_sessions_releaser_is_blocked),
     ("three-session aig/jay/kim scenario", test_three_session_aig_jay_kim),
+    ("symbol name normalisation (qualified vs bare)", test_symbol_name_normalisation),
     ("path variant normalisation", test_path_normalisation_variants),
 ]
 
