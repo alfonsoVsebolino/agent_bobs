@@ -377,15 +377,15 @@ header {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Working card */
+/* Working card (no conflict) */
 .col.working {
   border-color: var(--green-border);
-  /* animation: name duration timing fill-mode  [, name duration timing delay fill-mode] */
   animation: card-in 0.35s ease forwards;
 }
 
-/* Blocked card — card-in finishes at 0.35s, breathe-red starts after with its own 0.35s delay */
-.col.blocked {
+/* Any card with a conflict — red column regardless of status.
+   "blocked" (status) and "col-alert" (has conflict) are now separate. */
+.col.col-alert {
   border-color: var(--red-border);
   background:
     linear-gradient(160deg,
@@ -430,7 +430,7 @@ header {
 .col.working {
   animation: card-in 0.35s ease var(--stagger, 0s) forwards;
 }
-.col.blocked {
+.col.col-alert {
   animation:
     card-in    0.35s ease           var(--stagger, 0s) forwards,
     breathe-red 3.8s ease-in-out   calc(var(--stagger, 0s) + 0.35s) infinite;
@@ -440,14 +440,14 @@ header {
 .col:hover {
   transform: translateY(-3px);
 }
-.col.working:hover {
+.col.working:not(.col-alert):hover {
   border-color: rgba(62,224,101,0.70);
   box-shadow:
     inset 0 1px 0 var(--inner-hl),
     0 20px 56px rgba(0,0,0,0.70),
     0 0 20px rgba(62,224,101,0.10);
 }
-.col.blocked:hover {
+.col.col-alert:hover {
   border-color: rgba(220,60,55,0.80);
   box-shadow:
     inset 0 1px 0 var(--inner-hl),
@@ -455,7 +455,7 @@ header {
     0 0 40px rgba(220,55,55,0.38);
 }
 /* suppress breathe-red during hover so the hover glow dominates */
-.col.blocked:hover {
+.col.col-alert:hover {
   animation: card-in 0.35s ease var(--stagger, 0s) forwards;
 }
 
@@ -470,8 +470,8 @@ header {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.working .dot { background: var(--green-accent); box-shadow: 0 0 8px rgba(62,224,101,0.5); }
-.blocked .dot { background: var(--red-accent);   box-shadow: 0 0 8px rgba(255,92,87,0.5); }
+.col:not(.col-alert) .dot { background: var(--green-accent); box-shadow: 0 0 8px rgba(62,224,101,0.5); }
+.col.col-alert        .dot { background: var(--red-accent);   box-shadow: 0 0 8px rgba(255,92,87,0.5); }
 
 .session-name {
   font-size: 34px;
@@ -480,8 +480,8 @@ header {
   text-transform: uppercase;
   line-height: 1;
 }
-.working .session-name { color: var(--green-accent); }
-.blocked .session-name { color: var(--red-accent); }
+.col:not(.col-alert) .session-name { color: var(--green-accent); }
+.col.col-alert        .session-name { color: var(--red-accent); }
 
 /* ── Status badge ────────────────────────────────────────────────────────── */
 .status-badge {
@@ -494,9 +494,12 @@ header {
   text-transform: uppercase;
   align-self: flex-start;
 }
-.working.clean      .status-badge { background: var(--green-fill);   color: var(--green-accent); border: 1px solid var(--green-border); }
-.working.conflicted .status-badge { background: var(--neutral-bg);   color: var(--text-muted);   border: 1px solid var(--neutral-border); }
-.blocked            .status-badge { background: var(--red-fill);     color: var(--red-accent);   border: 1px solid var(--red-border); }
+/* No conflict → green */
+.col:not(.col-alert) .status-badge { background: var(--green-fill);   color: var(--green-accent); border: 1px solid var(--green-border); }
+/* Has conflict, status "blocked" → red badge */
+.col.col-alert.blocked .status-badge { background: var(--red-fill);   color: var(--red-accent);   border: 1px solid var(--red-border); }
+/* Has conflict, status "working" (the holder) → neutral badge */
+.col.col-alert.working .status-badge { background: var(--neutral-bg); color: var(--text-muted);   border: 1px solid var(--neutral-border); }
 
 /* ── Section labels & tags ───────────────────────────────────────────────── */
 .section-label {
@@ -591,10 +594,10 @@ header {
   transform: translateY(0);
   animation: none !important;
 }
-.col.settled.blocked {
+.col.settled.col-alert {
   animation: breathe-red 3.8s ease-in-out 0s infinite !important;
 }
-.col.settled.blocked:hover {
+.col.settled.col-alert:hover {
   animation: none !important;
 }
 
@@ -646,13 +649,18 @@ header {
   <span>Connection lost — retrying&hellip;</span>
 </div>
 
+<!-- SAMPLE DATA banner (hidden unless ?demo) -->
+<div id="demo-banner" style="display:none; align-items:center; gap:10px; margin:14px 36px 0; padding:10px 20px; border-radius:12px; background:rgba(255,200,0,0.07); border:1px solid rgba(255,200,0,0.30); color:#f5c400; font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase;">
+  <span>&#9670;</span><span>Sample Data</span>
+</div>
+
 <!-- Comparison panel -->
 <div id="compare">
   <div class="compare-side" id="git-side">
-    <div class="compare-icon">&#10003;</div>
+    <div class="compare-icon" id="git-icon">&#10003;</div>
     <div>
       <div class="compare-tool">git</div>
-      <div class="compare-result">0 conflicts</div>
+      <div class="compare-result" id="git-result">—</div>
     </div>
   </div>
   <div class="compare-side" id="ab-side">
@@ -673,6 +681,7 @@ header {
     <div class="radar-center"></div>
   </div>
   <div id="waiting-text">Waiting for Bob sessions&hellip;</div>
+  <!-- text overridden by JS when server unreachable -->
 </div>
 
 <!-- Board + SVG overlay -->
@@ -684,6 +693,33 @@ header {
 </div><!-- #app -->
 
 <script>
+// ── URL params ───────────────────────────────────────────────────────────
+
+var _params   = new URLSearchParams(window.location.search);
+var _isDemo   = _params.has('demo');
+var _gitParam = _params.get('git');   // null if not given
+
+// Initialise git panel
+(function() {
+  var gitResult = document.getElementById('git-result');
+  var gitIcon   = document.getElementById('git-icon');
+  if (_gitParam !== null) {
+    var n = parseInt(_gitParam, 10);
+    gitResult.textContent = n + (n === 1 ? ' conflict' : ' conflicts');
+    if (n > 0) {
+      gitIcon.textContent = '\u26A0';
+      document.getElementById('git-side').classList.add('alert');
+    }
+  } else {
+    gitResult.textContent = '\u2014'; // em dash
+  }
+})();
+
+// Show demo banner if ?demo
+if (_isDemo) {
+  document.getElementById('demo-banner').style.display = 'flex';
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────
 
 function makeSection(label, items, suffix) {
@@ -806,15 +842,17 @@ function makeConflictBox(conflict) {
 
 var _cardStagger = 0;
 
-function buildCard(s) {
+function cardClass(s, extra) {
+  // col-alert drives red column; working/blocked reflects actual status
   var hasConflict = s.conflict != null;
-  var isBlocked   = s.status === 'blocked';
+  var cls = 'col ' + s.status + (hasConflict ? ' col-alert' : '');
+  if (extra) cls += ' ' + extra;
+  return cls;
+}
 
+function buildCard(s) {
   var col = document.createElement('div');
-  col.className = 'col ' +
-    (hasConflict ? 'blocked' : 'working') +
-    (hasConflict && !isBlocked ? ' conflicted' : '') +
-    (!hasConflict ? ' clean' : '');
+  col.className = cardClass(s);
   col.dataset.session = s.session;
 
   // Apply stagger via inline custom property so nth-child shifts don't matter
@@ -857,17 +895,8 @@ function buildCard(s) {
 // ── Update an existing card in-place ─────────────────────────────────────
 
 function updateCard(col, s) {
-  var hasConflict = s.conflict != null;
-  var isBlocked   = s.status === 'blocked';
-
-  // Recompute class without touching animation classes
-  var baseClass = 'col settled ' +
-    (hasConflict ? 'blocked' : 'working') +
-    (hasConflict && !isBlocked ? ' conflicted' : '') +
-    (!hasConflict ? ' clean' : '');
-  // preserve flash class if present
-  if (col.classList.contains('flash')) baseClass += ' flash';
-  col.className = baseClass;
+  var extra = 'settled' + (col.classList.contains('flash') ? ' flash' : '');
+  col.className = cardClass(s, extra);
 
   // Status badge
   var badge = col.querySelector('.status-badge');
@@ -947,8 +976,14 @@ function render(sessions) {
   }
   waiting.classList.remove('visible');
 
-  // ── Comparison panel ───────────────────────────────────────────────────
-  var collisions = sessions.filter(function(s) { return s.conflict != null; }).length;
+  // ── Comparison panel — count unique conflicting pairs ─────────────────
+  var seenPairs = {};
+  sessions.forEach(function(s) {
+    if (!s.conflict) return;
+    var k = [s.session, s.conflict.with].sort().join('|');
+    seenPairs[k] = true;
+  });
+  var collisions = Object.keys(seenPairs).length;
   if (collisions > 0) {
     abSide.classList.add('alert');
     abIcon.textContent = '\u26A0';
@@ -1153,12 +1188,19 @@ function connect() {
     return;
   }
 
-  // If first connect doesn't open quickly, fall back to fake data
+  // If first connect doesn't open quickly, show waiting state (or demo data)
   if (!everLive) {
     firstTimer = setTimeout(function() {
       if (!everLive) {
         setConnected('offline');
-        render(FAKE_DATA);
+        if (_isDemo) {
+          render(FAKE_DATA);
+        } else {
+          // Show waiting state with server-unreachable message
+          render([]);
+          document.getElementById('waiting-text').textContent =
+            'Waiting for the Agent Bobs server\u2026';
+        }
       }
     }, FIRST_TIMEOUT_MS);
   }
@@ -1173,7 +1215,13 @@ function connect() {
   ws.onmessage = function(evt) {
     try {
       var data = JSON.parse(evt.data);
-      if (Array.isArray(data)) { lastReal = data; render(data); }
+      if (Array.isArray(data)) {
+        lastReal = data;
+        // Restore default waiting text in case it was set to server-unreachable
+        document.getElementById('waiting-text').textContent =
+          'Waiting for Bob sessions\u2026';
+        render(data);
+      }
     } catch(e) {}
   };
 
@@ -1192,7 +1240,13 @@ function connect() {
       });
     } else {
       setConnected('offline');
-      render(FAKE_DATA);
+      if (_isDemo) {
+        render(FAKE_DATA);
+      } else {
+        render([]);
+        document.getElementById('waiting-text').textContent =
+          'Waiting for the Agent Bobs server\u2026';
+      }
     }
     scheduleRetry();
   };
@@ -1209,7 +1263,13 @@ function onFailed() {
     });
   } else {
     setConnected('offline');
-    render(FAKE_DATA);
+    if (_isDemo) {
+      render(FAKE_DATA);
+    } else {
+      render([]);
+      document.getElementById('waiting-text').textContent =
+        'Waiting for the Agent Bobs server\u2026';
+    }
   }
   scheduleRetry();
 }
