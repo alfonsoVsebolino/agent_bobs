@@ -201,7 +201,7 @@ Expose `claim`, `check`, and `release` as MCP tools. They share collision and
 state logic with `api.py` by importing the same helpers — not by copy-pasting.
 
 **Expected Outcomes**
-- `mcp = FastMCP("agent-bobs")` instance is created here and exported.
+- `mcp = FastMCP("pulse-server")` instance is created here and exported.
 - `claim(session_id, files, symbols=[], calls=[])`:
   - Calls `detect` against current STATE.
   - If conflict: returns conflict description string; STATE unchanged.
@@ -219,7 +219,7 @@ because both live in the same process and `broadcast` is a pure async helper.
 
 **Todo List**
 - [ ] Create `server/mcp_tools.py`
-- [ ] Create `mcp = FastMCP("agent-bobs")` instance
+- [ ] Create `mcp = FastMCP("pulse-server")` instance
 - [ ] Implement `claim` tool with `@mcp.tool`
 - [ ] Implement `check` tool with `@mcp.tool`
 - [ ] Implement `release` tool with `@mcp.tool`

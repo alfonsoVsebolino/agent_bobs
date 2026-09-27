@@ -28,12 +28,12 @@ lablab's submission form asks for more than the event page lists:
 
 | Field | Limit | Draft or plan |
 |---|---|---|
-| Submission title | 50 characters | "Agent Bobs — when one Bob isn't alone" (37) |
-| Short description | 255 characters | "When several developers run IBM Bob on one repo, their agents can't see each other and break each other's code in ways git never flags. Agent Bobs lets every Bob session see the others, and stops a Bob before it writes over another's work." (239) |
+| Submission title | 50 characters | "Pulse Server — when one Bob isn't alone" (37) |
+| Short description | 255 characters | "When several developers run IBM Bob on one repo, their agents can't see each other and break each other's code in ways git never flags. Pulse Server lets every Bob session see the others, and stops a Bob before it writes over another's work." (239) |
 | Long description | 500 words (event rule) | Abrahm |
 | Cover image | 16:9, e.g. 1920×1080 | **final:** `docs/images/cover.png`, Gabriel's design. If the form rejects its size (3.4 MB), upload `docs/images/cover.jpg`: the same image at 0.5 MB |
 | Video | 3 minutes (event rule), 300 MB | Abrahm |
-| GitHub repository | — | github.com/alfonsoVsebolino/agent_bobs |
+| GitHub repository | — | github.com/alfonsoVsebolino/pulse_server |
 | Demo application platform / URL | — | it runs locally; say so, and link the README's "Run the demo" |
 
 ## Rules that are easy to miss
@@ -53,7 +53,7 @@ No weights are published.
 |---|---|---|
 | **Application of Technology** | How complete and well thought-out the project is, with a clear application of IBM Bob 2.0. | Bob-native design: MCP server, custom mode, lifecycle hooks, AGENTS.md — and built with Bob, as `bob_sessions/` shows |
 | **Presentation** | The clarity and effectiveness of the project presentation. | the video: "git: 0 conflicts" next to the live dashboard catching the collision |
-| **Business Value** | The impact and practical value, considering how effectively the solution addresses a high-priority issue. | the measured control run vs. the Agent Bobs run |
+| **Business Value** | The impact and practical value, considering how effectively the solution addresses a high-priority issue. | the measured control run vs. the Pulse Server run |
 | **Originality** | The uniqueness and creativity of the solution and the approach in applying IBM Bob 2.0 to address the stated issue. | the approach: Bob-native, and it prevents the collision instead of reporting it. We don't claim the idea itself is new — see the prior art in `PITCH.md` |
 
 ## Video plan

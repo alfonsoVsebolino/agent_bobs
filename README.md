@@ -1,16 +1,18 @@
-<img src="docs/images/logo.png" alt="Agent Bobs logo: three agents joined around an eye" width="120">
+<p align="center">
+  <img src="docs/images/logo.png" alt="Pulse Server logo: three agents joined around an eye" width="110">
+</p>
 
-# Agent Bobs
+# Pulse Server
 
 **When one Bob isn't alone.** When several developers run IBM Bob on the same
 repository at the same time, their agents can't see each other — and they break
-each other's work in ways Git never reports. Agent Bobs lets every Bob session
+each other's work in ways Git never reports. Pulse Server lets every Bob session
 see the others, and stops a Bob *before* it writes code on top of another Bob's
 unmerged change.
 
 Built with IBM Bob, for IBM Bob, by team **iMAGIC** for the IBM Bob 2.0 Hackathon.
 
-![The Agent Bobs dashboard during our live run: Git reports 0 conflicts, Agent Bobs has caught 2 collisions](docs/images/dashboard.png)
+![The Pulse Server dashboard during our live run: Git reports 0 conflicts, Pulse Server has caught 2 collisions](docs/images/dashboard.png)
 
 *A real capture from our live run. aig's Bob is renaming `get_user`; jay's and
 kim's Bobs, about to write code that calls it, were stopped before writing a
@@ -32,10 +34,10 @@ developers, separate copies of the code — where no single session can see.
 
 ## What we measured
 
-The same three tasks, run by three real Bobs: first without Agent Bobs, then with
+The same three tasks, run by three real Bobs: first without Pulse Server, then with
 it. Full details in [`docs/RESULTS.md`](docs/RESULTS.md).
 
-| | Without Agent Bobs | With Agent Bobs |
+| | Without Pulse Server | With Pulse Server |
 |---|---|---|
 | What jay's and kim's Bobs did | wrote 84 lines calling a function that no longer existed | were stopped before writing a line |
 | When the problem surfaced | at merge, when the tests failed | the moment each Bob declared its plan |
@@ -43,14 +45,14 @@ it. Full details in [`docs/RESULTS.md`](docs/RESULTS.md).
 | Tests after the merge | **FAILED** (2 errors) | **OK** |
 
 All three Bobs finished their tasks within about 40 seconds. Agents move too fast
-for anyone to watch, which is why Agent Bobs acts on a collision instead of only
+for anyone to watch, which is why Pulse Server acts on a collision instead of only
 displaying it.
 
 ## How it works — inside Bob
 
-Agent Bobs is built from Bob's own extension points:
+Pulse Server is built from Bob's own extension points:
 
-- **A custom Bob mode, "Agent Bobs."** Before writing code, Bob declares its plan
+- **A custom Bob mode, "Pulse Server."** Before writing code, Bob declares its plan
   through the `claim` MCP tool: the files it will edit, the functions it will
   change and the functions it will call. If the plan collides with another Bob's,
   it stops and tells its developer who holds what, and why.
@@ -72,7 +74,7 @@ has the old code.
 
 ```mermaid
 flowchart LR
-    AIG["aig's Bob<br/>renaming get_user"] -- claim --> S(("Agent Bobs<br/>server"))
+    AIG["aig's Bob<br/>renaming get_user"] -- claim --> S(("Pulse Server<br/>server"))
     JAY["jay's Bob<br/>calls get_user"] -- claim --> S
     S -- "conflict: aig is renaming get_user" --> JAY
     HOOK["PreToolUse hook<br/>before every write"] -- check --> S
@@ -81,7 +83,7 @@ flowchart LR
 
 ## How we built it with Bob
 
-We built Agent Bobs with Bob. The server, the hooks and custom mode, the
+We built Pulse Server with Bob. The server, the hooks and custom mode, the
 dashboard, the demo app and the test harness were all developed in Bob tasks, in
 Plan and Agent modes, from a shared `AGENTS.md` that all four of our Bobs loaded
 automatically. Every change was reviewed and tested before merging; when a
@@ -138,7 +140,7 @@ finished — before its work was merged. All three are recorded in
 | `server/` | the server: collision rules, MCP tools, hook endpoints, websocket | Marco |
 | `dashboard/` | the live dashboard | Gabriel |
 | `demo/` | the sample app we break on purpose | Abrahm |
-| `demo/.bob/` | the Agent Bobs mode, MCP connection and hooks | Alfonso |
+| `demo/.bob/` | the Pulse Server mode, MCP connection and hooks | Alfonso |
 | `harness/` | builds the three demo copies, merges their work, runs the tests | Marco |
 | `bob_sessions/` | every team member's Bob task summaries | everyone |
 | `docs/` | results, decisions, pitch, roles | — |
@@ -204,18 +206,18 @@ and runs the tests — all from the repo root.
 
     py harness\setup_demo.py
 
-This creates `%USERPROFILE%\agent-bobs-demo` with a `base/` git repo and three
+This creates `%USERPROFILE%\pulse-server-demo` with a `base/` git repo and three
 clones (`demo-aig`, `demo-jay`, `demo-kim`), each pre-loaded with `.bob/`.
 
-**Control run** (no Agent Bobs — shows the raw git + test failure):
+**Control run** (no Pulse Server — shows the raw git + test failure):
 
-    py harness\setup_demo.py --without-agent-bobs --fresh
+    py harness\setup_demo.py --without-pulse-server --fresh
 
-**Open each session** in its own Bob window using the *Agent Bobs* mode:
+**Open each session** in its own Bob window using the *Pulse Server* mode:
 
-    %USERPROFILE%\agent-bobs-demo\demo-aig
-    %USERPROFILE%\agent-bobs-demo\demo-jay
-    %USERPROFILE%\agent-bobs-demo\demo-kim
+    %USERPROFILE%\pulse-server-demo\demo-aig
+    %USERPROFILE%\pulse-server-demo\demo-jay
+    %USERPROFILE%\pulse-server-demo\demo-kim
 
 **After all three Bobs finish**, merge and run tests:
 
@@ -277,13 +279,13 @@ folder name.
 ### 3. Open each workspace in its own Bob window
 
 In Bob, open `~/demo-alf` as a workspace. Repeat for `~/demo-alf2`. Select the
-**Agent Bobs** mode in both windows.
+**Pulse Server** mode in both windows.
 
 Verify in each window:
 
-- **MCP tab** → `agent-bobs` connected with 3 tools (`claim`, `check`, `release`).
+- **MCP tab** → `pulse-server` connected with 3 tools (`claim`, `check`, `release`).
 - **Hooks tab** → 2 hooks registered (PreToolUse, SessionStart).
-- Ask Bob: `"What is your Agent Bobs session name?"` — it should answer `alf`
+- Ask Bob: `"What is your Pulse Server session name?"` — it should answer `alf`
   (or `alf2` in the second window).
 
 ### 4. In-repo file claim (same file, two sessions)

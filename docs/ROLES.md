@@ -8,9 +8,9 @@ outside Bob.
 
 | Who | Role | Built | Bob tasks |
 |---|---|---|---|
-| Marco | Server and harness | the MCP server and its collision rules, the demo harness, the fixes found in live runs; ran the measured control and Agent Bobs runs | 21 |
-| Alfonso | Bob integration | the Agent Bobs mode and its rules, the MCP configuration and the lifecycle hooks; found in a live test that Bob's `Stop` hook fires on every pause | 2 |
-| Gabriel | Dashboard and design | the live dashboard; the logo and the cover | 1 |
+| Marco | Server and harness | the MCP server and its collision rules, the demo harness, the fixes found in live runs; ran the measured control and Pulse Server runs | 21 |
+| Alfonso | Bob integration | the Pulse Server mode and its rules, the MCP configuration and the lifecycle hooks; found in a live test that Bob's `Stop` hook fires on every pause | 2 |
+| Gabriel | Dashboard | the live dashboard | 1 |
 | Abrahm | Demo and submission | the sample app and its three tasks; the video and the submission | 2 |
 
 The working notes below record how the work was divided during the event.
@@ -45,10 +45,10 @@ a push is rejected, ask Alfonso to add you as a collaborator on the repo.
 passing tests. How to run it is in the README.
 
 **Also done:** the demo harness in `harness/`. `setup_demo.py` builds the three
-demo copies, with or without Agent Bobs; `merge_demo.py` merges their work, runs
+demo copies, with or without Pulse Server; `merge_demo.py` merges their work, runs
 the tests and prints the dashboard link. See "Run the demo" in the README.
 
-**Next:** the first real control run — three Bobs in copies without Agent Bobs,
+**Next:** the first real control run — three Bobs in copies without Pulse Server,
 then the merge — to measure the numbers for the pitch.
 
 ---
@@ -80,7 +80,7 @@ against the real server with the three-Bob demo.
 You build the live screen the judges watch during the demo. You don't need the
 server to start: build it with fake data now and connect it later.
 
-**Before you start:** pull the repo, open `agent-bobs` in Bob IDE, and read the
+**Before you start:** pull the repo, open `pulse-server` in Bob IDE, and read the
 "Data contract" section of `AGENTS.md`. Your page receives exactly that shape.
 
 **What to build:** one file, `dashboard/index.html`, that opens by double-clicking
@@ -114,7 +114,7 @@ the page in the group chat.
 ## Person 3 — Bob integration (Alfonso)
 
 **Built:** the Bob integration in `demo/.bob/` — the MCP connection, the three
-hooks, the Agent Bobs mode and its rules. Running the hooks against the real
+hooks, the Pulse Server mode and its rules. Running the hooks against the real
 server found two problems, so it isn't demo-ready yet.
 
 **Update — branch `alfonso` (Sat 23:13), tested against the real server:** reads
@@ -140,8 +140,8 @@ which turns the logging hooks on for everyone who opens the repo in Bob.
 3. **Let Bob explain a blocked write.** The hook's message goes to Bob's log, not
    to Bob. Add a rule: if a write is blocked, call `check` on that file, then
    tell the user who holds it and why.
-4. **Confirm in Bob** that the Agent Bobs mode appears in the mode list, the MCP
-   tab shows `agent-bobs` connected with 3 tools, and Bob knows its session name.
+4. **Confirm in Bob** that the Pulse Server mode appears in the mode list, the MCP
+   tab shows `pulse-server` connected with 3 tools, and Bob knows its session name.
 5. **Replace the screenshot** `bob_sessions/image_alfonsovsebolino_sessionlog.png`
    with the Task summary panel, named
    `imagic_alfonsovsebolino_task01_bob_integration_summary.png`.
@@ -159,7 +159,7 @@ into the repo.
 **Step 1 — a logger.** Ask Bob, in Agent mode, to create `.bob\hooks\log_hook.py`:
 a standard-library Python script that reads the JSON Bob sends on stdin and
 appends it, with a timestamp, as one line to `hooklog.jsonl` in the folder. When
-the event is `SessionStart`, it also prints "Your Agent Bobs session name is test".
+the event is `SessionStart`, it also prints "Your Pulse Server session name is test".
 
 **Step 2 — turn the hooks on.** Create `.bob\settings.json` in that folder. The
 format comes from Bob's lifecycle-hooks docs; with no matcher, it catches every
@@ -193,7 +193,7 @@ the Bob window.
    it must ask you something halfway, such as "ask me which name to use, then
    create the file". Check whether `Stop` was logged after the question, or only
    once at the very end. This decides how we release claims.
-5. **SessionStart:** in a new task, ask Bob "what is your Agent Bobs session
+5. **SessionStart:** in a new task, ask Bob "what is your Pulse Server session
    name?" If it answers "test", the hook's output reaches Bob's context.
 
 **Done means:** a post in the group chat with the five answers and a copy of
@@ -232,7 +232,7 @@ conflicts, and the merged code fails its tests.
 You own the sample app we break on purpose, and later the video and the writeup.
 The demo app comes first, and it doesn't need the server.
 
-**Before you start:** pull the repo, open `agent-bobs` in Bob IDE, and read "The
+**Before you start:** pull the repo, open `pulse-server` in Bob IDE, and read "The
 demo" section of `AGENTS.md`.
 
 **What to build:** a small Python app in `demo/` — about 100 lines, **standard
@@ -260,7 +260,7 @@ same time, each written like a real request:
 **Why they're designed this way:** each task touches a different file, so Git
 reports **zero conflicts** when they're merged — yet after task 1 renames
 `get_user`, tasks 2 and 3 are broken. That's the whole pitch: Git sees nothing,
-and Agent Bobs catches it. Tasks 2 and 3 only *call* `get_user`, so they must
+and Pulse Server catches it. Tasks 2 and 3 only *call* `get_user`, so they must
 **not** conflict with each other — which shows the tool doesn't raise false
 alarms.
 

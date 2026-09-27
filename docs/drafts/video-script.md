@@ -1,4 +1,4 @@
-# Video script — Agent Bobs
+# Video script — Pulse Server
 
 **Target length: 2:50.** The rules say 3:00 maximum, and judges stop watching at
 3:00. The demo must be on screen for at least 90 seconds (here: 0:45–2:20), the
@@ -12,9 +12,9 @@ the footage.
 
 | Clip | Where it comes from |
 |---|---|
-| **A.** The Agent Bobs run (2:14 raw) | Marco — already sent |
-| **B.** The control run, *without* Agent Bobs, ending with the failing merge | Marco — recording it now |
-| **C.** Bob tour: the Agent Bobs mode, the MCP tab, the Hooks tab (about 30 s) | Marco — recording it now |
+| **A.** The Pulse Server run (2:14 raw) | Marco — already sent |
+| **B.** The control run, *without* Pulse Server, ending with the failing merge | Marco — recording it now |
+| **C.** Bob tour: the Pulse Server mode, the MCP tab, the Hooks tab (about 30 s) | Marco — recording it now |
 | Cover image | `docs/images/cover.png` in the repo |
 | The evidence folder | screen-record yourself scrolling `bob_sessions/` on GitHub |
 
@@ -28,7 +28,7 @@ calls get_user* · *kim: tests, calls get_user*.
 **Say:**
 > IBM Bob makes one developer much faster. But teams don't work alone. Here, three developers run Bob on the same repository. One Bob renames a function. The other two write new code that calls it.
 
-### 2 · Without Agent Bobs — 0:20–0:45
+### 2 · Without Pulse Server — 0:20–0:45
 **Show:** clip B at 3–4× speed while the Bobs work. Each Bob reports its tests
 pass. Then cut to the merge summary at normal speed, and put a box around
 `Conflicted files : 0`, then around `Merged tests : FAILED (errors=2)`.
@@ -36,14 +36,14 @@ pass. Then cut to the merge summary at normal speed, and put a box around
 **Say:**
 > Every Bob does its job and passes its own tests — in under a minute. Then we merge. Git reports zero conflicts, because the changes are in different files. But the tests fail. Two of the three Bobs built on a function that no longer exists, and nobody was warned.
 
-### 3 · With Agent Bobs — 0:45–2:20 (the solution in action, 95 seconds)
+### 3 · With Pulse Server — 0:45–2:20 (the solution in action, 95 seconds)
 
 **3a · How it plugs into Bob — 0:45–1:00**
-**Show:** clip C — the mode dropdown set to *Agent Bobs*, the MCP tab showing
-`agent-bobs` connected with `claim`, `check` and `release`, and the Hooks tab.
+**Show:** clip C — the mode dropdown set to *Pulse Server*, the MCP tab showing
+`pulse-server` connected with `claim`, `check` and `release`, and the Hooks tab.
 
 **Say:**
-> Now the same three tasks, with Agent Bobs. It's built into Bob itself: a custom Bob mode, a small MCP server that every Bob connects to, and Bob's lifecycle hooks.
+> Now the same three tasks, with Pulse Server. It's built into Bob itself: a custom Bob mode, a small MCP server that every Bob connects to, and Bob's lifecycle hooks.
 
 **3b · The rename — 1:00–1:25**
 **Show:** clip A. Zoom in on the dashboard as aig's column appears, showing
@@ -67,7 +67,7 @@ aig is renaming `get_user`.
 > And Bob's PreToolUse hook backs this up. It checks every file write with the server, and blocks the write if another Bob holds the file.
 
 **3e · The result — 2:10–2:20**
-**Show:** the merge summary from the Agent Bobs run, with a box around
+**Show:** the merge summary from the Pulse Server run, with a box around
 `Merged tests : OK`.
 
 **Say:**
@@ -78,14 +78,14 @@ aig is renaming `get_user`.
 *26 Bob tasks · all four team members*.
 
 **Say:**
-> We built Agent Bobs with Bob, in Plan and Agent modes, from one shared AGENTS.md that all four of our Bobs loaded automatically. And by running real Bobs, we learned things no document told us — like Bob's Stop event firing on every pause.
+> We built Pulse Server with Bob, in Plan and Agent modes, from one shared AGENTS.md that all four of our Bobs loaded automatically. And by running real Bobs, we learned things no document told us — like Bob's Stop event firing on every pause.
 
 ### 5 · Close — 2:42–2:50
 **Show:** the cover image, with the repo link underneath:
-`github.com/alfonsoVsebolino/agent_bobs`
+`github.com/alfonsoVsebolino/pulse_server`
 
 **Say:**
-> Agent Bobs. When one Bob isn't alone, stop the collision — before the code is written.
+> Pulse Server. When one Bob isn't alone, stop the collision — before the code is written.
 
 ## Editing tips
 

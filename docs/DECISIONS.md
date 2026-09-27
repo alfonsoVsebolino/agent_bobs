@@ -78,7 +78,7 @@ file the hook sees) is the backstop.
 - The headline collision is **rename vs call, in different files**.
 - One **same-file** collision, so a hook visibly blocks a write.
 - One pair that only **calls** the same function, which correctly stays green.
-- Run it **twice** — without Agent Bobs, then with it.
+- Run it **twice** — without Pulse Server, then with it.
 
 **Why.** Two of v1's three tasks relied on stretch goals ("writes its own
 duplicate helper" is #3; "calls the function task 1 renamed" is #4). That set two
@@ -92,7 +92,7 @@ the same lines. Keeping the rename and its caller in separate files guarantees
 **How it helps us win.** The brief asks us to "clearly demonstrate impact" with
 numbers. A collision count alone is not impact. The control run is: we show the
 real `git merge` output reporting zero conflicts, then the real test failure,
-then the same three tasks caught with Agent Bobs — measured, not claimed.
+then the same three tasks caught with Pulse Server — measured, not claimed.
 
 **Cost.** One extra rehearsal run. Drop v1's "4 collisions" figure; quote what
 we measure.
@@ -202,7 +202,7 @@ is unchanged.
 | `claim` checks and records in one step | Two separate calls let two racing sessions both pass |
 | Demo sessions open a copy of `demo/`, not the repo root | Keeps our build context out of the product under test |
 | snake_case everywhere, including slides | We picked Python; v1's pitch used `getUser` |
-| Name stays **Agent Bobs** | The plural is the product; "Agent Bob" reads as Bob's own Agent mode |
+| Name stays **Pulse Server** | The plural is the product; "Agent Bob" reads as Bob's own Agent mode |
 
 ## Still unverified — check before relying on it
 
@@ -217,10 +217,10 @@ is unchanged.
 - ~~**The exact names of Bob's file-editing tools**~~ — **seen in the live runs'
   hook logs:** `write_file` and `apply_diff` for writes; `read_file`,
   `list_files`, `grep` and `FindSymbol` for reads; MCP tools arrive as
-  `mcp__agent-bobs__claim` and `mcp__agent-bobs__release`. `claim_hook.py` also
+  `mcp__pulse-server__claim` and `mcp__pulse-server__release`. `claim_hook.py` also
   treats any tool whose name contains write, edit, replace, insert, diff, create
   or delete as a write, so an unseen name is still caught.
-- **Whether hooks also fire for subagent tool calls.** If they do, Agent Bobs
+- **Whether hooks also fire for subagent tool calls.** If they do, Pulse Server
   protects Bob's own parallel subagents from each other at no extra cost. Worth
   one question, not one line of code.
 
@@ -228,7 +228,7 @@ is unchanged.
 
 - **Repo description** reads "provider-agnostic." Our entire differentiation
   from prior art is being *Bob-native*, and judges read the description. The
-  owner should change it — and consider renaming the repo `agent-bobs`
+  owner should change it — and consider renaming the repo `pulse-server`
   (GitHub redirects the old URL).
 - **`bob_sessions/`** — every participant captures their own. See
   `bob_sessions/README.md`.
