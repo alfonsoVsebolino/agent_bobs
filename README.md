@@ -1,12 +1,6 @@
-<img src="docs/images/logo.png" alt="Agent Bobs logo: three agents joined around an eye" width="120">
+![Agent Bobs cover: when one Bob isn't alone](docs/images/cover.png)
 
-# Agent Bobs
-
-**When one Bob isn't alone.** When several developers run IBM Bob on the same
-repository at the same time, their agents can't see each other — and they break
-each other's work in ways Git never reports. Agent Bobs lets every Bob session
-see the others, and stops a Bob *before* it writes code on top of another Bob's
-unmerged change.
+# <img src="docs/images/logo.png" alt="Agent Bobs logo" height="32" style="vertical-align:middle;"> Agent Bobs
 
 Built with IBM Bob, for IBM Bob, by team **iMAGIC** for the IBM Bob 2.0 Hackathon.
 
