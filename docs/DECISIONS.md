@@ -135,6 +135,42 @@ together is a much deeper integration than most entries will show, which is what
 **Risk.** Taken from Bob's docs; not yet run on a real Bob. It is purely
 additive: if hooks misbehave, the mode-instruction path from v1 still works.
 
+### ADR-4a: `Stop` fires on every pause, not only on task completion
+
+**Observed (verified in live test, Sep 2026).** Bob's `Stop` event fires
+whenever the agent finishes a turn and waits for user input — not only when the
+task is genuinely complete or abandoned. In a two-session blocking test:
+
+1. Session `alf` claimed `hello.py` and asked the user a question.
+2. A `Stop` line appeared in `hooklog.jsonl` immediately after the question.
+3. `release_hook.py` fired, removed `alf` from STATE, and unblocked `alf2`.
+4. `alf2` then wrote `hello.py` without any conflict — the session it should
+   have been blocked by had already vanished.
+
+**Trade-off.**
+
+| Option | Effect |
+|---|---|
+| Keep `Stop` hook | Sessions auto-release on every pause. Stale claims are impossible but mid-task blocking evaporates the moment Bob asks a question. |
+| Remove `Stop` hook | Sessions stay alive across pauses, blocking is durable. Stale claims are possible if a Bob window is closed without calling `release`. |
+
+**Decision.** The `Stop` hook is **retained in the repo** (`demo/.bob/settings.json`)
+because removing it would silently break stale-claim cleanup and we do not have
+a reliable way to distinguish "turn complete, waiting for input" from "task
+abandoned." For the live demo, operators must manually remove the `Stop` entry
+from the workspace copies (`~/demo-alf/.bob/settings.json` etc.) before running
+the blocking test, and call `release` explicitly at the end of each session.
+
+**Implication for the demo script.** Step 4b of the demo walkthrough in
+`README.md` already documents this: check `hooklog.jsonl` for a `Stop` line
+after the pause; if present, remove the `Stop` hook from the workspace copies
+and repeat. Quote the `Stop` behaviour when reporting — it is an honest finding,
+not a bug in our code.
+
+**Future fix.** If Bob exposes a `reason` or `exitCode` field on the `Stop`
+event distinguishing "user asked to stop" from "turn boundary", the hook can
+filter on that field and only release on a genuine stop.
+
 ## 5. One dashboard column per active session
 
 **What.** Render a column for each session in the state, rather than four fixed ones.
@@ -163,12 +199,19 @@ is unchanged.
 
 ## Still unverified — check before relying on it
 
-- ~~Judging criteria and deadline~~ — **confirmed** on the lablab event page; see
-  `docs/SUBMISSION.md`. The real criteria differ from v1: Application of
-  Technology, Presentation, Business Value and Originality.
-- **Hooks and MCP behave as documented** — Person 3, first thing once Bob is installed.
-- **The exact names of Bob's file-editing tools**, so the `PreToolUse` matcher
-  covers all of them. Docs show `write_file`; there are likely others.
+- **Judging criteria.** v1 says "meaningful use of IBM Bob, originality,
+  demonstrated impact." That is not in the official guide or the kickoff email.
+  Plausible, unconfirmed.
+- **Deadline.** Sun 27 Sep 23:00 PHT (15:00 UTC) comes from another team's repo,
+  not an official source. Confirm on the submission form.
+- ~~**Hooks and MCP behave as documented**~~ — **verified**. `PreToolUse` blocks
+  writes, `SessionStart` injects session name, `Stop` fires on every turn
+  boundary (see ADR-4a).
+- ~~**The exact names of Bob's file-editing tools**~~ — **verified via
+  `hooklog.jsonl` probe**. Writing tools observed: `write_file`,
+  `str_replace_based_edit_tool`, `create_file`, `apply_diff`, `insert_content`,
+  `search_and_replace`. Full list is the `WRITE_TOOLS` set in
+  `demo/.bob/hooks/claim_hook.py`.
 - **Whether hooks also fire for subagent tool calls.** If they do, Agent Bobs
   protects Bob's own parallel subagents from each other at no extra cost. Worth
   one question, not one line of code.
