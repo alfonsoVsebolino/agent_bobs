@@ -235,3 +235,115 @@ is unchanged.
 | 28 | **Sun** 27 Sep, 03:00 | Stretch goals allowed only if ahead |
 | 36 | Sun 27 Sep, 11:00 | **Feature freeze** — video and writeup only after this |
 | 48 | Sun 27 Sep, 23:00 | **Deadline** (confirmed) — submit by 21:00 |
+
+## 6. agent-sync parallelisation extensions
+
+**What.** Four additive extensions to the coordination layer, none of which
+replace or modify existing hooks or MCP tools:
+
+1. `PostToolUse` hook → `POST /api/progress` — per-file unblocking
+2. `sync` MCP tool + `POST /api/sync` — session readiness handshake
+3. `barrier` status + `barrier` MCP tool — N-session rendezvous checkpoint
+4. `SessionEnd` hook → `POST /api/release` — auto-release on true session end
+
+**Why.** The existing model is pessimistic locking: first session to claim wins;
+second session blocks until the first calls `release`. This is correct for
+conflict prevention, but it serialises sessions that could work in parallel.
+The `calls × calls → no conflict` rule already proves the design supports
+parallelism; these extensions surface it to agents and allow coordinated
+split-task execution.
+
+**Scope check.** None of the four extensions add a new detection type. They
+operate on existing `same_file` and `same_function` logic, or on infrastructure
+only (routing, status fields, signalling).
+
+**Cost.** Extensions 1–3 are additive: new files, new routes, one new field on
+`SessionRecord`. Extension 4 is blocked pending verification (see ADR-6d below).
+
+---
+
+### ADR-6a: `PostToolUse` hook + `/api/progress`
+
+**Problem.** The server knows a session *claimed* a file but not when it was
+*written*. A blocked session must wait for the full `release` call even if the
+holder has already written the file it was waiting on and moved to other work.
+
+**Decision.** Add a `PostToolUse` hook (`post_tool_hook.py`) that fires after
+every successful file write and POSTs `{"session", "file", "done": true}` to a
+new `POST /api/progress` endpoint. The server removes that file from the
+session's claimed set, re-runs `detect()` on any blocked sessions, and unblocks
+any whose remaining conflict no longer holds.
+
+**Constraint.** The hook exits 0 always — it never blocks. Only `PreToolUse`
+blocks. The `PostToolUse` entry in `settings.json` is added alongside the
+existing `PreToolUse` entry; the existing entry is not touched.
+
+**Risk.** If `detect()` produces a false-clear after partial file removal (e.g.
+a symbol conflict remains), the re-run catches it because symbols are still in
+the session's `symbols` list. File removal only affects the `same_file` check.
+
+---
+
+### ADR-6b: `sync` MCP tool + `POST /api/sync`
+
+**Problem.** Two sessions splitting independent work have no way to signal
+readiness to each other. One must either poll the dashboard manually or wait for
+a human to relay the signal.
+
+**Decision.** Add a `sync(session_id, wait_for, until_status, timeout)` MCP
+tool and matching `POST /api/sync` HTTP route. The server polls STATE on a
+0.5 s interval inside an `asyncio.wait_for` block. When the named session
+reaches the target status (default `"working"`) or releases, the call returns
+`{"ready": true}`. On timeout: `{"ready": false, "reason": "timeout"}`.
+
+**Constraint.** `sync` never mutates STATE. It is a read-only wait. `_LOCK` is
+acquired only for each status read, never held across a sleep.
+
+**Trade-off.** Polling at 0.5 s is simple and has no concurrency hazard. An
+event-driven approach (condition variable per session) would be faster but adds
+complexity that is not justified for a local demo with two or three sessions.
+
+---
+
+### ADR-6c: `barrier` status + `barrier` MCP tool
+
+**Problem.** N sessions splitting a task need a shared rendezvous: all must
+reach a checkpoint before any proceeds to the next step.
+
+**Decision.** Add a `"barrier"` status value to `SessionRecord` (alongside
+`"working"` and `"blocked"`) and a `barrier_group` field. When a session calls
+`barrier(session_id, group_id)`, its status is set to `"barrier"`. When every
+session in the group has arrived, the server sets all of them back to
+`"working"` and broadcasts.
+
+**Constraint.** `collision.detect()` already skips sessions whose status is not
+`"working"` (line 49: `if rec.status != "working": continue`). No change to
+collision logic is required.
+
+**Dashboard contract change.** `status` gains a third value: `"barrier"`.
+Dashboard columns for `"barrier"` sessions render in amber. This is a contract
+change — Person 2 must be told before the branch is merged.
+
+**Build order.** Implement after ADR-6a and ADR-6b have passing tests.
+
+---
+
+### ADR-6d: `SessionEnd` auto-release — blocked pending verification
+
+**Problem.** If a Bob window closes without calling `release`, its claims stay
+in STATE indefinitely. The only current fix is restarting the server.
+
+**Proposed decision.** Add a `SessionEnd` hook (`end_hook.py`) that calls the
+existing `POST /api/release`. No new server code needed.
+
+**Why blocked.** ADR-4a documents that `Stop` fires on every turn boundary, not
+only on true session end. If `SessionEnd` behaves the same way, this hook
+re-introduces the mid-task release bug that ADR-4a resolved. Before
+implementing, `SessionEnd` must be verified as firing exactly once, on genuine
+session close, in a live Bob session. That test has not been run.
+
+**If verified distinct from `Stop`:** add `end_hook.py` (three lines, stdlib
+only) and a `SessionEnd` entry in `settings.json`. No other files change.
+
+**If not verified or behaves like `Stop`:** do not implement. Stale claims
+remain a known limitation; restarting the server is the documented mitigation.
