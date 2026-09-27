@@ -75,7 +75,7 @@ aig is renaming `get_user`.
 
 ### 4 · Built with Bob — 2:20–2:42
 **Show:** your recording of `bob_sessions/` on GitHub, then `AGENTS.md`. Caption:
-*24 Bob task summaries · all four team members*.
+*26 Bob tasks · all four team members*.
 
 **Say:**
 > We built Agent Bobs with Bob, in Plan and Agent modes, from one shared AGENTS.md that all four of our Bobs loaded automatically. And by running real Bobs, we learned things no document told us — like Bob's Stop event firing on every pause.

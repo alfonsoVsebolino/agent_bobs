@@ -39,6 +39,11 @@ FAILED (errors=2)
 - **Cost:** 0.85 Bobcoins for all three Bobs.
 
 Evidence: `bob_sessions/imagic_marcoandreibelen_task08…task10_control_*_summary.png`.
+
+**Reproduced on camera.** The control run was repeated at 12:13 and recorded for
+the video, with three new Bob sessions (`task19`–`task21`, 0.75 Bobcoins). Same
+result: each Bob stayed in its lane and passed its own tests, git merged all
+three with 0 conflicts, and the merged tests failed with 2 errors.
 An earlier take (`task05`–`task07`) ran while the demo app wrongly already
 contained the password-reset files, so jay had nothing to do. It showed
 the same "0 conflicts, tests fail" result, with one broken contribution instead

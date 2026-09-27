@@ -1,6 +1,9 @@
 <!-- Draft for the lablab "IBM Bob Usage Statement" field — 500 words or less.
      Paste everything below the line. Each owner should confirm their paragraph
-     describes how their part was really built. -->
+     describes how their part was really built.
+     Counts: 26 distinct Bob tasks (bob_sessions/ has 27 files: Alfonso's task02 and
+     task03 are two views of one task, Task Id 201e4485…), Bobcoins 12.29 + 14.43
+     + 4.27 + 1.98 = 32.97. -->
 
 ---
 
@@ -19,8 +22,8 @@
 - **MCP** over streamable HTTP, with our three tools auto-approved;
 - **lifecycle hooks**: SessionStart gives each Bob its session name, and PreToolUse checks every file write and blocks it with exit code 2 when another Bob holds the file.
 
-**Learning from Bob.** We tested with real Bob sessions: twelve Bob tasks ran in our demo copies, six without Agent Bobs and six with it. Bob's own hook logs taught us three things no document did. Its Stop event fires on every pause, so we stopped releasing claims on it. Its hook events name their fields tool_name and tool_input, unlike its documentation, so our hook reads both. And releasing claims when each Bob finished let a collision slip through, so claims now last until the work is merged. Each finding became a follow-up Bob task.
+**Learning from Bob.** We tested with real Bob sessions: fifteen Bob tasks ran in our demo copies, nine without Agent Bobs and six with it. Bob's own hook logs taught us three things no document did. Its Stop event fires on every pause, so we stopped releasing claims on it. Its hook events name their fields tool_name and tool_input, unlike its documentation, so our hook reads both. And releasing claims when each Bob finished let a collision slip through, so claims now last until the work is merged. Each finding became a follow-up Bob task.
 
-**Evidence.** bob_sessions/ holds 24 Bob task summaries from all four team members, covering about 39 Bobcoins.
+**Evidence.** bob_sessions/ holds the summaries of 26 Bob tasks from all four team members, covering about 33 Bobcoins.
 
 We did not use watsonx.ai or watsonx Orchestrate.
