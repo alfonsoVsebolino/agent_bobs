@@ -20,15 +20,5 @@
         ]
       }
     ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .bob/hooks/release_hook.py"
-          }
-        ]
-      }
-    ]
   }
 }

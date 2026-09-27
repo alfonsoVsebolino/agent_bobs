@@ -101,8 +101,10 @@ def main() -> None:
     _log(event)
 
     # Only proceed to claim if this is a file-writing tool.
-    tool_name = event.get("tool_name") or event.get("name") or ""
-    if tool_name not in WRITE_TOOLS:
+    tool_name = event.get("tool") or event.get("tool_name") or event.get("name") or ""
+    _WRITE_KEYWORDS = {"write", "edit", "replace", "insert", "diff", "create", "delete"}
+    is_write = tool_name in WRITE_TOOLS or any(kw in tool_name for kw in _WRITE_KEYWORDS)
+    if not is_write:
         sys.exit(0)
 
     # Extract the file path from the tool input.
