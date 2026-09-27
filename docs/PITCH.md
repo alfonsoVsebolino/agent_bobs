@@ -80,8 +80,9 @@ all of it live."
 5. kim's Bob, writing tests, also calls `get_user`, and is caught the same way.
 6. jay and kim both only *call* `get_user`, so they never conflict with each
    other. The tool doesn't cry wolf.
-7. When aig's Bob finishes, its claims are released. jay and kim go back to
-   green and continue, now knowing the new name.
+7. aig's claim stays until its rename is **merged** — until then, jay's and
+   kim's copies still have the old name. Once it's merged and released, jay and
+   kim go back to green and continue with the new name.
 
 Throughout, the hook guards every write: if any Bob tries to write a file that
 another Bob holds, Bob refuses it.
@@ -157,6 +158,6 @@ lifecycle hooks and AGENTS.md. That is our niche, and we say so openly.
 
 - [x] When Bob's Stop hook fires — on every pause, so it was removed. It decided whether
       claims are released when a task ends or after every reply.
-- [ ] The Agent Bobs run's real numbers: collisions caught, and how quickly — goes in `docs/RESULTS.md`.
+- [x] The Agent Bobs run's real numbers: collisions caught, and how quickly — see `docs/RESULTS.md`.
 - [x] The control run's real `git merge` output and test failure — see `docs/RESULTS.md`.
 - [x] The exact submission requirements and deadline — see `docs/SUBMISSION.md`.

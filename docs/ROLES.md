@@ -1,4 +1,23 @@
-# Roles and first tasks
+# Roles — who built what
+
+## Final status
+
+Everything below was built with IBM Bob; each person's Bob task summaries are in
+[`bob_sessions/`](../bob_sessions/).
+
+| Who | Role | Built | Bob tasks |
+|---|---|---|---|
+| Marco | Server and harness | the MCP server and its collision rules, the demo harness, the fixes found in live runs; ran the measured control and Agent Bobs runs | 21 |
+| Alfonso | Bob integration | the Agent Bobs mode and its rules, the MCP configuration and the lifecycle hooks; found in a live test that Bob's `Stop` hook fires on every pause | 2 |
+| Gabriel | Dashboard | the live dashboard | 1 |
+| Abrahm | Demo and submission | the sample app and its three tasks; the video and the submission | 2 |
+
+The working notes below record how the work was divided during the event.
+Every task in them is done.
+
+---
+
+## Working notes
 
 Team **iMAGIC**: four people, roughly 20–24 working hours each across the 48
 hours. Every role builds with Bob, and every person saves their **own** Bob task

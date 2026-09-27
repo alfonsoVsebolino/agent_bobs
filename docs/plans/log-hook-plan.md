@@ -48,12 +48,12 @@ mutated; no WebSocket broadcast is sent.
   `files`, `symbols`, `calls` with the right defaults).
 
 **Relevant Context**
-- [`server/api.py`](server/api.py:52-77): `ClaimRequest` model and `/api/claim`
+- `server/api.py`: `ClaimRequest` model and `/api/claim`
   are the direct pattern. The new route is structurally identical minus the
   broadcast call.
-- [`server/state.py`](server/state.py:161-209): `check()` is already fully
+- `server/state.py`: `check()` is already fully
   implemented; returns `{"clear": bool, "conflict": dict | None}`.
-- [`server/mcp_tools.py`](server/mcp_tools.py:75-96): the MCP `check` tool
+- `server/mcp_tools.py`: the MCP `check` tool
   calls `_check(session_id, files, symbols, calls)` — exact same call this
   route will make.
 
@@ -115,13 +115,13 @@ risk. For `SessionStart` it prints the session name to stdout.
  10. `sys.exit(0)`.
 
 **Relevant Context**
-- [`demo/.bob/hooks/claim_hook.py`](demo/.bob/hooks/claim_hook.py:63-114):
+- `demo/.bob/hooks/claim_hook.py`:
   path extraction pattern (`input` / `tool_input`, three inner keys), session
   derivation, urllib POST shape — `/api/check` takes the same request body as
   `/api/claim`.
-- [`demo/.bob/hooks/session_hook.py`](demo/.bob/hooks/session_hook.py:29-43):
+- `demo/.bob/hooks/session_hook.py`:
   stdout print pattern; reads stdin even when not consumed.
-- [`demo/.bob/hooks/release_hook.py`](demo/.bob/hooks/release_hook.py:30-48):
+- `demo/.bob/hooks/release_hook.py`:
   fail-open pattern on server error.
 - Log file sibling to the script — `__file__`-relative path is essential since
   Bob may invoke the hook from any working directory.
@@ -138,21 +138,21 @@ so every tool call and session event is captured.
 
 **Expected Outcomes**
 - `.bob/settings.json` exists at the repo-root `.bob/` (not inside `demo/`).
-- Valid JSON; matches the schema of [`demo/.bob/settings.json`](demo/.bob/settings.json).
+- Valid JSON; matches the schema of `demo/.bob/settings.json`.
 - `PreToolUse`, `Stop`, and `SessionStart` each have one hook entry:
   `{"type": "command", "command": "python .bob/hooks/log_hook.py"}`.
 - No `"matcher"` key anywhere — fires for every tool.
 
 **Todo List**
 - [ ] Write `.bob/settings.json` following the exact schema from
-  [`demo/.bob/settings.json`](demo/.bob/settings.json): top-level `"hooks"`
+  `demo/.bob/settings.json`: top-level `"hooks"`
   object → each event key → array of one object with a `"hooks"` array →
   each hook has `"type": "command"` and `"command"`.
 
 **Relevant Context**
-- [`demo/.bob/settings.json`](demo/.bob/settings.json): exact schema to copy.
+- `demo/.bob/settings.json`: exact schema to copy.
 - No matcher is intentional — confirmed by the comment in
-  [`claim_hook.py:19`](demo/.bob/hooks/claim_hook.py:19): *"no matcher filter,
+  `claim_hook.py:19`: *"no matcher filter,
   so this hook fires for EVERY tool call"*.
 
 **Status** `[ ] pending`

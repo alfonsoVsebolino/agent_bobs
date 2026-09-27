@@ -14,7 +14,7 @@
 - **Server.** Bob's Plan mode produced the server design, which we reviewed and tightened before building. Agent mode then built the collision core with tests, and later the MCP tools, the HTTP routes for the hooks and the dashboard's websocket, with an integration test that connects two MCP clients to one server. When our review found that the first core missed a three-session case, a follow-up in the same Bob task fixed it and added the test.
 - **Bob integration.** Bob wrote the "Agent Bobs" custom mode and its rules, the MCP configuration and the lifecycle hooks, and created the pull request that merged them.
 - **Dashboard.** Bob built the live dashboard as a single HTML file driven by the server's websocket.
-- **Demo app and harness.** Bob built the sample app we break on purpose, and a harness that builds three demo copies, merges their work and runs the tests. A follow-up task fixed rebuilds on Windows, which had failed on git's read-only files.
+- **Demo app and harness.** Bob built the sample app we break on purpose, and a harness that builds three demo copies, merges their work and runs the tests. A follow-up in the same Bob task fixed rebuilds on Windows, which had failed on git's read-only files.
 
 **Running it.** The product itself runs on Bob's extension points:
 

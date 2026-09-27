@@ -42,7 +42,8 @@ Server listens on **port 8765**.
   Checks and records in one step, and returns any conflicts, so two sessions racing
   each other cannot both get through.
 - `check(session_id, files, symbols, calls=[])` — read-only: would this claim conflict?
-- `release(session_id)` — this session is finished.
+- `release(session_id)` — this session's work has been merged; frees its claims.
+  Not called when a task ends: until the merge, other copies still have the old code.
 
 `symbols` = functions this session will **change**. `calls` = functions it will
 **call without changing**. A conflict exists when one session changes a function

@@ -56,11 +56,7 @@ No weights are published.
 | **Business Value** | The impact and practical value, considering how effectively the solution addresses a high-priority issue. | the measured control run vs. the Agent Bobs run |
 | **Originality** | The uniqueness and creativity of the solution and the approach in applying IBM Bob 2.0 to address the stated issue. | the approach: Bob-native, and it prevents the collision instead of reporting it. We don't claim the idea itself is new — see the prior art in `PITCH.md` |
 
-## Video plan (3:00 maximum)
+## Video plan
 
-| Time | What |
-|---|---|
-| 0:00–0:30 | The problem: three Bobs, one repo — git sees nothing |
-| 0:30–2:15 | **The demo, on screen** (the rule asks for at least 90 s): the control run's clean merge and failing tests, then the same three tasks with Agent Bobs catching the collision live |
-| 2:15–2:45 | How Bob built it and how it runs inside Bob: modes, MCP, hooks |
-| 2:45–3:00 | Close |
+The shot-by-shot script, with narration and timings (2:50):
+[`docs/drafts/video-script.md`](drafts/video-script.md).
