@@ -146,9 +146,11 @@ single-session test still passes.
 - `.bob/custom_modes.yaml` + `.bob/rules-agent-bobs/` — the Agent Bobs mode: before
   writing, call `claim` with the plan (files, symbols, calls); on conflict, stop and
   tell the user.
-- `.bob/settings.json` → `hooks`: `PreToolUse` (matcher covering every
-  file-editing tool) → `/api/claim`, exit 2 to block; `Stop` → `/api/release`;
-  `SessionStart` → print the session name.
+- `.bob/settings.json` → `hooks`: `PreToolUse` → `/api/claim` for file-writing
+  tools only, exit 2 to block; `SessionStart` → print the session name. **No
+  `Stop` hook:** a live test showed Stop fires every time Bob pauses, which
+  released claims mid-task. Sessions release through the mode's `release` call;
+  restarting the server clears everything.
 - On Windows hooks run through `cmd /c`.
 
 ## Repo layout and owners

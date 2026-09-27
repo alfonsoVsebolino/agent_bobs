@@ -1,3 +1,7 @@
+> **Superseded.** This plan's root-level logger, `release_hook.py` and the `Stop`
+> hook were removed after a live test showed Stop fires on every pause. Kept for
+> the record of how the hooks were designed with Bob.
+
 # Plan: log_hook.py + .bob/settings.json (Option B1)
 
 ## Overview

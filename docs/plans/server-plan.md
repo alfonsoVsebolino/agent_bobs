@@ -1,3 +1,6 @@
+> The plan Bob produced in Plan mode for `server/` (Task 01). The review of it
+> changed several points — see `AGENTS.md` for what was built.
+
 # Plan: server/ — MCP tools, API routes, WebSocket, collision rules
 
 ## Top-Level Overview

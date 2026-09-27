@@ -183,7 +183,7 @@ In Bob, open `~/demo-alf` as a workspace. Repeat for `~/demo-alf2`. Select the
 Verify in each window:
 
 - **MCP tab** → `agent-bobs` connected with 3 tools (`claim`, `check`, `release`).
-- **Hooks tab** → 3 hooks registered (PreToolUse, Stop, SessionStart).
+- **Hooks tab** → 2 hooks registered (PreToolUse, SessionStart).
 - Ask Bob: `"What is your Agent Bobs session name?"` — it should answer `alf`
   (or `alf2` in the second window).
 
@@ -193,10 +193,9 @@ In **demo-alf**, ask Bob:
 
 > "Claim `auth/user.py`, then ask me what to write before you edit it."
 
-Do **not** answer the follow-up question yet. Check `~/demo-alf/.bob/hooks/hooklog.jsonl`
-— you should see a `PreToolUse` line with `tool_name: write_file` and no `Stop`
-line after it. If a `Stop` line appears, Bob's Stop hook fires on every pause;
-remove the `Stop` entry from `~/.../demo-alf/.bob/settings.json` and repeat.
+Do **not** answer the follow-up question yet. The claim stays active while Bob
+waits: there is deliberately no `Stop` hook, because Bob's Stop event fires on
+every pause and would release the claim.
 
 In **demo-alf2**, ask Bob:
 
@@ -207,7 +206,7 @@ you:
 
 > "`auth/user.py` is held by session 'alf'. Reason: …"
 
-The dashboard at `http://127.0.0.1:8765` should show demo-alf2's column in red.
+The dashboard (`dashboard/index.html`, open in a browser) should show demo-alf2's column in red.
 
 ### 5. Out-of-repo file claim (file outside the workspace folder)
 
@@ -240,10 +239,6 @@ Open it in either demo folder:
 
 You should see:
 
-- A line per tool call with `tool_name` and `_ts`.
-- Write tools (`write_file`, `apply_diff`, etc.) with a `_would_conflict` field
-  if the server was running when the log hook fired.
-- Read tools (`read_file`, `list_files`, etc.) logged but **not** claimed —
-  their lines have no `_would_conflict` field and no blocked status.
-- A `Stop` line only if Bob's Stop event fires (use this to decide whether to
-  keep the Stop hook in `settings.json`).
+- One line per tool call, with the tool's name, `_ts` and `_session`.
+- Only file-writing tools (`write_file`, `apply_diff`, and so on) are claimed;
+  reads and listings (`read_file`, `list_files`) are logged but never claimed.

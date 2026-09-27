@@ -155,7 +155,7 @@ lifecycle hooks and AGENTS.md. That is our niche, and we say so openly.
 
 ## Verify before this goes into the video
 
-- [ ] When Bob's Stop hook fires — Person 3 is testing it. It decides whether
+- [x] When Bob's Stop hook fires — on every pause, so it was removed. It decided whether
       claims are released when a task ends or after every reply.
 - [ ] The Agent Bobs run's real numbers: collisions caught, and how quickly — goes in `docs/RESULTS.md`.
 - [x] The control run's real `git merge` output and test failure — see `docs/RESULTS.md`.

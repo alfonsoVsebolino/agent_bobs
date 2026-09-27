@@ -99,10 +99,17 @@ we measure.
 
 ## 4. Bob lifecycle hooks
 
-**What.** Three hooks in each demo workspace's `.bob/settings.json`:
+**What.** Hooks in each demo workspace's `.bob/settings.json`:
 - `PreToolUse` on every file-editing tool → `POST /api/claim`; exit code 2 **blocks the write**
-- `Stop` → `POST /api/release` when the agent finishes
 - `SessionStart` → prints the session name into Bob's context
+
+> **Update, Sunday — the `Stop` hook was removed.** v2 also released claims on
+> `Stop`. Alfonso's live test showed Stop fires every time Bob pauses — after
+> asking the user a question, or after reporting a conflict — not only when a
+> task ends. A session holding `hello.py` asked a question, its claims were
+> released, and a second Bob then wrote `hello.py` unblocked. Sessions now
+> release through the mode's `release` call; restarting the server clears stale
+> claims.
 
 The MCP tools and the custom mode stay exactly as planned. Hooks are added on top.
 
@@ -111,7 +118,8 @@ The MCP tools and the custom mode stay exactly as planned. Hooks are added on to
   may make dozens of edits. If it skips `check` once, the collision slips through.
   `PreToolUse` fires on every write, and Bob itself refuses the write on exit 2.
 - **Stale claims.** An agent that stops without calling `release` would leave its
-  column stuck red — possibly mid-recording. `Stop` releases automatically.
+  column stuck red. v2 used `Stop` for this; see the update above for why that
+  was removed.
 - **Session identity.** Every Bob needs its own name. The folder name
   (`demo-aig` → `aig`) gives one source of truth for both the hooks and the agent.
 - **It unblocks Person 3.** v1's blocking first task was finding out whether Bob
