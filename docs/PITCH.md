@@ -8,7 +8,7 @@ a number in the video that we have not measured.
 
 Bob is brilliant when it works alone. But teams don't work alone. When several
 developers run Bob on the same project at the same time, the agents crash into
-each other and nobody finds out until it's too late. **Pulse Server lets them see
+each other and nobody finds out until it's too late. **Agent Bobs lets them see
 each other — and stops them before they collide.**
 
 ## The problem, as a story
@@ -107,9 +107,9 @@ sample app, on one laptop. Then we show two things side by side:
 
 - **Git says:** 0 conflicts — the real `git merge` output — followed by the real
   test failure.
-- **Pulse Server says:** the collisions, caught before the bad code was written.
+- **Agent Bobs says:** the collisions, caught before the bad code was written.
 
-We run it twice, without Pulse Server and then with it, and quote only what we
+We run it twice, without Agent Bobs and then with it, and quote only what we
 measured.
 
 ## Prior art — we do not claim novelty
@@ -135,7 +135,7 @@ Bobs is built for agents, which move too fast to watch — and it acts on the
 information instead of only displaying it.
 
 **Our position:** coordination tooling exists for other coding assistants, but
-none of it is Bob-native. Pulse Server is built on Bob's own custom modes, MCP,
+none of it is Bob-native. Agent Bobs is built on Bob's own custom modes, MCP,
 lifecycle hooks and AGENTS.md. That is our niche, and we say so openly.
 
 ## What we say openly
@@ -145,7 +145,7 @@ lifecycle hooks and AGENTS.md. That is our niche, and we say so openly.
   machines, but we have not demonstrated that.
 - Function-level detection relies on each Bob declaring the functions it changes
   and calls. The hook guarantees file-level protection only.
-- Pulse Server is not a new idea. It is a Bob-native answer to a known problem.
+- Agent Bobs is not a new idea. It is a Bob-native answer to a known problem.
 
 ## Never claim
 
@@ -158,6 +158,6 @@ lifecycle hooks and AGENTS.md. That is our niche, and we say so openly.
 
 - [x] When Bob's Stop hook fires — on every pause, so it was removed. It decided whether
       claims are released when a task ends or after every reply.
-- [x] The Pulse Server run's real numbers: collisions caught, and how quickly — see `docs/RESULTS.md`.
+- [x] The Agent Bobs run's real numbers: collisions caught, and how quickly — see `docs/RESULTS.md`.
 - [x] The control run's real `git merge` output and test failure — see `docs/RESULTS.md`.
 - [x] The exact submission requirements and deadline — see `docs/SUBMISSION.md`.

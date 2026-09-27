@@ -86,7 +86,7 @@ risk. For `SessionStart` it prints the session name to stdout.
     Present only when `_would_conflict` is `true`.
 - If the server is unreachable, the two `_would_conflict` / `_conflict_detail`
   keys are omitted from that record entirely (fail open).
-- `SessionStart` event → `print("Your Pulse Server session name is test")` to
+- `SessionStart` event → `print("Your Agent Bobs session name is test")` to
   stdout.
 - Any exception anywhere is caught at the top level; script always exits 0.
 
@@ -108,7 +108,7 @@ risk. For `SessionStart` it prints the session name to stdout.
      5 s). On success parse response and set `_would_conflict` and (if true)
      `_conflict_detail` on the record. On `URLError` or any exception, skip
      those keys.
-  7. If `SessionStart`: `print("Your Pulse Server session name is test")`.
+  7. If `SessionStart`: `print("Your Agent Bobs session name is test")`.
   8. Resolve log path:
      `os.path.join(os.path.dirname(os.path.abspath(__file__)), "hooklog.jsonl")`.
   9. Append `json.dumps(record) + "\n"` to the log file.

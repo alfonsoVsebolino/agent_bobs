@@ -1,6 +1,6 @@
-# Pulse Server rules
+# Agent Bobs rules
 
-These rules apply whenever you are in the **Pulse Server** mode.
+These rules apply whenever you are in the **Agent Bobs** mode.
 
 ## Before every edit
 

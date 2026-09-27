@@ -3,10 +3,10 @@
 Measured results only. Quote these in the video and the writeup; never a number
 that isn't here.
 
-## Control run — three Bobs, no Pulse Server
+## Control run — three Bobs, no Agent Bobs
 
 Sunday 27 September, on one laptop. Built with
-`harness/setup_demo.py --without-pulse-server`; each Bob got its task from
+`harness/setup_demo.py --without-agent-bobs`; each Bob got its task from
 `demo/TASKS.md` in its own copy of the demo app, in Agent mode.
 
 | Bob | Task | What it changed | Its own tests |
@@ -49,11 +49,11 @@ contained the password-reset files, so jay had nothing to do. It showed
 the same "0 conflicts, tests fail" result, with one broken contribution instead
 of two, and led to fixing the demo app.
 
-## Pulse Server run — the same three tasks, with Pulse Server
+## Agent Bobs run — the same three tasks, with Agent Bobs
 
 Sunday 27 September, the same laptop. Built with `harness/setup_demo.py` (every
-copy gets the Pulse Server mode, MCP connection and hooks), with the server and
-the dashboard running. The same three tasks, sent in the Pulse Server mode. aig
+copy gets the Agent Bobs mode, MCP connection and hooks), with the server and
+the dashboard running. The same three tasks, sent in the Agent Bobs mode. aig
 went first, so its rename was already under way when the others started — the
 situation the product is for.
 
@@ -78,14 +78,14 @@ screen recording used in the video.
 
 ### The same three tasks, side by side
 
-| | Without Pulse Server | With Pulse Server |
+| | Without Agent Bobs | With Agent Bobs |
 |---|---|---|
 | What jay and kim did | wrote 84 lines calling a function that no longer existed | wrote nothing — stopped at the claim |
 | When the problem surfaced | at merge, when the tests failed | the moment each Bob declared its plan |
 | What git reported | 0 conflicts | 0 conflicts |
 | Merged tests | **FAILED** (errors=2) | **OK** |
 
-### The first Pulse Server run caught nothing — and why
+### The first Agent Bobs run caught nothing — and why
 
 An earlier run (10:21, `task12`–`task14`) caught no collision. The hook logs
 showed two real problems, both fixed in `d29940c`:

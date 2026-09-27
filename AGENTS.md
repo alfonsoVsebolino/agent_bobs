@@ -1,4 +1,4 @@
-# Pulse Server
+# Agent Bobs
 
 A coordination layer that lets several developers' IBM Bob sessions on one
 repository see each other, and stops an agent **before** it breaks another
@@ -140,11 +140,11 @@ single-session test still passes.
 
 ### Bob configuration (inside each demo workspace)
 
-- `.bob/mcp.json` — `{"mcpServers": {"pulse-server": {"type": "streamable-http",
+- `.bob/mcp.json` — `{"mcpServers": {"agent-bobs": {"type": "streamable-http",
   "url": "http://127.0.0.1:8765/mcp", "alwaysAllow": ["check", "claim", "release"]}}}`
 - Also switch on the global **Use MCP servers** auto-approve toggle, or every tool
   call pops a confirmation.
-- `.bob/custom_modes.yaml` + `.bob/rules-pulse-server/` — the Pulse Server mode: before
+- `.bob/custom_modes.yaml` + `.bob/rules-agent-bobs/` — the Agent Bobs mode: before
   writing, call `claim` with the plan (files, symbols, calls); on conflict, stop and
   tell the user.
 - `.bob/settings.json` → `hooks`: `PreToolUse` → `/api/claim` for file-writing
@@ -160,7 +160,7 @@ single-session test still passes.
 server/        MCP tools, /api routes, /ws, collision rules    Person 1
 dashboard/     the live screen, one column per active session  Person 2
 demo/          the sample app we break on purpose              Person 4
-demo/.bob/     Pulse Server mode, MCP connection, hooks          Person 3
+demo/.bob/     Agent Bobs mode, MCP connection, hooks          Person 3
 harness/       builds the demo copies, merges, runs the tests  Person 1
 bob_sessions/  task-summary screenshots                        everyone, their own
 docs/          DECISIONS.md
@@ -177,9 +177,9 @@ Three Bob sessions, three copies of `demo/`, one laptop — said openly.
 - Include one **same-file** collision so a hook visibly blocks a write.
 - Include one pair that only **calls** the same function, and show it correctly
   stays green.
-- Run it twice: once **without** Pulse Server (show the real git merge output and
+- Run it twice: once **without** Agent Bobs (show the real git merge output and
   the real test failure), once with. Quote only numbers you measured.
-- `harness/` builds the three copies — with or without Pulse Server — and merges
+- `harness/` builds the three copies — with or without Agent Bobs — and merges
   their work afterwards.
 
 ## Team rules
