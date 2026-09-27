@@ -33,7 +33,7 @@ lablab's submission form asks for more than the event page lists:
 | Long description | 500 words (event rule) | Abrahm |
 | Cover image | 16:9, e.g. 1920×1080 | a draft is in `docs/images/cover.png` — a real capture of the live run, with the title; Gabriel can polish it |
 | Video | 3 minutes (event rule), 300 MB | Abrahm |
-| GitHub repository | — | github.com/alfonsoVsebolino/pulse_mcp.dev |
+| GitHub repository | — | github.com/alfonsoVsebolino/agent_bobs |
 | Demo application platform / URL | — | it runs locally; say so, and link the README's "Run the demo" |
 
 ## Rules that are easy to miss

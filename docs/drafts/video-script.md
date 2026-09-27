@@ -82,7 +82,7 @@ aig is renaming `get_user`.
 
 ### 5 · Close — 2:42–2:50
 **Show:** the cover image, with the repo link underneath:
-`github.com/alfonsoVsebolino/pulse_mcp.dev`
+`github.com/alfonsoVsebolino/agent_bobs`
 
 **Say:**
 > Agent Bobs. When one Bob isn't alone, stop the collision — before the code is written.
